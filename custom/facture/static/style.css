@@ -1,0 +1,42 @@
+/* Ensure the size of the image fit the container perfectly */
+#uploadedImage {
+    display: block;
+    height:800px;
+    width:800px
+
+
+    /* This rule is very important, please don't ignore this */
+
+}
+#cropResult {
+  display: block;
+
+
+}
+#cropButton {
+    display: none;
+
+}
+::-webkit-file-upload-button {
+  background: #7C7BAD;
+  color: #FFFFFF;
+  padding: 5px 5px ;
+  border: 2px solid #7C7BAD;
+  padding: 10px;
+
+}
+
+#imageodoo{
+margin_bottom:30px;
+margin-left:20px
+}
+
+#cropButton{
+margin-bottom:20px;
+margin-top:50px
+
+}
+
+
+
+

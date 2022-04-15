@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="testjs" inherit_id="web.assets_backend">
+        <!--  <xpath expr="//link[last()]" position="after">
+            <link rel="stylesheet" type="text/scss" href="/account/static/src/scss/variables.scss"/>
+        </xpath>-->
+        <xpath expr="." position="inside">
+
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
+             <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.js"></script>
+
+
+                    <link
+                            rel="stylesheet"
+                            href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.min.css"
+                    />
+                    <link rel="stylesheet" href="/facture/static/style.css"/>
+            <script type="text/javascript" src="/facture/static/test.js"/>
+            </xpath>
+    </template>
+</odoo>

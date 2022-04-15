@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template_testjs" xml:space="preserve">
+    <t t-name="template_testjs">
+        <div>
+             <input style="color:#F5F5F5" name="imageCode" id="imageodoo" class="imageodoo" type="file"/>
+            <!--            <button style="color:#F5F5F5" id="selctionner" >selctionner</button>-->
+            <button style="margin-left:20px" class="btn btn-light" id="cropButton">Crop</button>
+
+            <!--                 <button style="margin-bottom:20px" class=" btn btn-danger" id="generate" >tableau</button>-->
+            <div style="border:4px solid #7C7BAD ; width: 500px ; margin-top:30px ; margin-left:20px" name="imgFi"
+                 id="uploadedImage">
+                </div>
+            <div style="margin-top:30px;margin-left:20px;display:none " id="cropResult"></div>
+
+         <div style="margin-top:40px" id="cropTable">
+                 <table class="table">
+                <thead>
+                 <tr>
+                    <th scope="col">X</th>
+                     <th scope="col">Y</th>
+                      <th scope="col">HEIGHT</th>
+                      <th scope="col">WIDTH</th>
+                     <th scope="col" >Actions</th>
+                  </tr>
+                </thead>
+             <tbody>
+
+             </tbody>
+                 </table>
+         </div>
+        </div>
+
+    </t>
+    <t t-name="template_imageRender">
+        <img style="width:500px;height:800px" t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatImage"/>
+    </t>
+
+    <t t-name="template_imageCropRender">
+        <img t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatCropImage"/>
+    </t>
+
+    <t t-name="template_cropTableData">
+        <div >
+            <t t-esc="lastElement"  />
+            <table  class="table" >
+                <thead>
+                 <tr >
+                    <th scope="col">X</th>
+                     <th scope="col">Y</th>
+                      <th scope="col">HEIGHT</th>
+                      <th scope="col">WIDTH</th>
+                     <th scope="col" >Actions</th>
+                  </tr>
+                </thead>
+               <tbody id="tableBody"  >
+                   <t t-set="item_index" t-value="0"/>
+                   <tr class="tableRow"  t-foreach="lastElement" t-as="ligne" t-attf-id="{{ligne.index}}">
+                    <td>
+                        <t id="x" t-esc="ligne.x"/>
+                    </td>
+                    <!--                    <td>-->
+                    <!--                        <t t-esc="lastElement[ligne].x" />-->
+                    <!--                    </td>-->
+                    <td>
+                            <t id="y" t-esc="ligne.y"/>
+                    </td>
+                    <td>
+                          <t id="height" t-esc="ligne.height"/>
+                    </td>
+                    <td>
+                               <t id="width" t-esc="ligne.width"/>
+                    </td>
+
+                       <td>
+                           <button id="btn-edit" type="button" class="btn btn-primary">Edit</button>
+                           <button id="btn-delete" type="button" class="btn btn-danger">Delete</button>
+                       </td>
+                 <t t-set="item_index" t-value="item_index+1"/>
+                </tr>
+               </tbody>
+            </table>
+        </div>
+    </t>
+
+</templates>

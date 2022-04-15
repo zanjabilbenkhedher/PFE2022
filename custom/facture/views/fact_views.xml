@@ -1,0 +1,109 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="facture_list_view">
+            <field name="name">fact list</field>
+            <field name="model">facture.fact</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name_seq"/>
+                    <field name="name_facture"/>
+                    <field name="fournisseur"/>
+                    <field name="vat"/>
+                    <field name="adresse"/>
+                    <field name="billDate"/>
+                    <field name="dueDate"/>
+                    <field name="reference"/>
+                    <field name="iban"/>
+                    <field name="currency"/>
+                    <field name="montantT"/>
+                    <field name="lines"/>
+
+                </tree>
+            </field>
+        </record>
+        <!-- explicit form view definition -->
+        <record model="ir.ui.view" id="facture_form_view">
+            <field name="name">fact list</field>
+            <field name="model">facture.fact</field>
+            <field name="arch" type="xml">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_facture" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <div class="o_stat_info">
+                                <!--                                <field name="print_facture" class="o_stat_value"/>-->
+                                <span class="o_stat_text">Facture</span>
+
+                            </div>
+                        </button>
+
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name_seq"/>
+                        </h1>
+                    </div>
+                    <group style="background-color:#F5F5F5">
+                        <group>
+                            <widget name="template_testjs"/>
+                        </group>
+                        <group style="margin-top:180px ">
+                            <field name="name_seq"/>
+
+                            <field name="name_facture"/>
+                            <field name="fournisseur"/>
+                            <field name="vat"/>
+                            <field name="adresse"/>
+                            <field name="billDate"/>
+                            <field name="dueDate"/>
+                            <field name="reference"/>
+                            <field name="iban"/>
+                            <field name="currency"/>
+                            <field name="montantT"/>
+                            <field name="lines"/>
+                            <field name="codeZoning" widget="image"/>
+                            <field name="model_id"/>
+                            <!-- <field name="details_id"/>-->
+                        </group>
+                    </group>
+                    <field style="display: none" name="detaille"/>
+                    <field style="display: none" name="test"/>
+                    <field style="display: none" name="imageCode" type="text"/>
+                    <form>
+                        <notebook>
+                            <page string="Crop Details" name="crop-details">
+                                <field context="{'default_model_id':model_id}" name="detail_ids">
+                                    <tree editable="top">
+                                        <field name="x"/>
+                                        <field name="y"/>
+                                        <field name="height"/>
+                                        <field name="width"/>
+                                        <field name="model_id"/>
+                                        <field domain="[('model_id', '=' ,model_id)]" name="field_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Other Info" name="other-info">
+                                <group>
+                                    <field name="OtherInfo"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </form>
+                </sheet>
+                <form>
+                </form>
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="fact_action_window">
+            <field name="name">fact window</field>
+            <field name="res_model">facture.fact</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Top menu item -->
+        <menuitem name="Facture" id="facture.menu_root"/>
+        <!-- menu categories -->
+        <menuitem name="Invoice" id="facture_fact_cat" parent="facture.menu_root"/>
+        <!--  <menuitem name="Menu 2" id="facture.menu_2" parent="facture.menu

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<odoo>
+        <record id="view_create_facture_form" model="ir.ui.view">
+            <field name="name">create.facture.wizard.form</field>
+            <field name="model">create.facture.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Create New Invoice">
+                    <group class="oe_title">
+                        <field name="uploadedFacture"  />
+                        <field name="uploadedFacture2"  />
+<!--                    <field name="invoice_id"/>-->
+                        <field name="fournisseur"/>
+                        <field name="model"/>
+
+                    </group>
+                    <footer>
+<!--                        <button name="action_lost_reason_apply" string="Submit" type="object" class="btn-primary"/>-->
+                         <button name="action_create_invoice" type="object" string="Create" class="btn-primary"/>
+                        <button name="comparaison" type="object" string="Comparate" class="btn-primary"/>
+                          <button name="zoning" type="object" string="zoning" class="btn-primary"/>
+                        <button name="read_model" type="object" string="read_model" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_create_facture" model="ir.actions.act_window">
+            <field name="name">Create Invoice</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">create.facture.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_create_facture_form"/>
+            <field name="target">new</field>
+        </record>
+</odoo>

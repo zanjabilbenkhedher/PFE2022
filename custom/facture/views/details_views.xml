@@ -1,0 +1,84 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record model="ir.ui.view" id="details_list_view">
+            <field name="name">Details list</field>
+            <field name="model">facture.details</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="x"/>
+                    <field name="y"/>
+                    <field name="height"/>
+                    <field name="width"/>
+
+                </tree>
+            </field>
+        </record>
+
+        <!-- explicit form view definition -->
+
+        <record model="ir.ui.view" id="details_form_view">
+            <field name="name">Details list</field>
+            <field name="model">facture.details</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <header>
+                        </header>
+                         <div style="font-size:30px; color:#7C7BAD; margin-bottom:10px;margin-top:10px; font-weight:bold">CROP IMAGE DETAILS</div>
+                         <header>
+                        </header>
+                        <group style="margin-top:30px">
+                            <group>
+                                <field name="x"/>
+                                <field name="y"/>
+                            </group>
+                            <group>
+                                <field name="height"/>
+                                <field name="width"/>
+                            </group>
+                            <group>
+                                <field name="facture_id"/>
+                            </group>
+                            <group>
+                                <field name="model_id"/>
+                            </group>
+                            <group >
+                                <field style="border:4px solid #7C7BAD"  name="display_image" widget="image"/>
+                            </group>
+                            <group>
+                                <field name="extraction_text"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="details_action_window">
+            <field name="name">details window</field>
+            <field name="res_model">facture.details</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Top menu item -->
+
+        <menuitem name="Facture" id="facture.menu_root"/>
+
+        <!-- menu categories -->
+
+        <menuitem name="Details" id="facture_details_cat" parent="facture.menu_root"/>
+        <!--    <menuitem name="Menu 2" id="details_image.menu_2" parent="details_image.menu_root"/>
+        -->
+        <!-- actions -->
+
+        <menuitem name="List of details" id="facture_details_list" parent="facture_details_cat"
+                  action="details_action_window"/>
+        <!--    <menuitem name="Server to list" id="details_image" parent="details_image.menu_2"
+                      action="details_image.action_server"/>
+        -->
+    </data>
+</odoo>
