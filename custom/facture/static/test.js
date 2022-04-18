@@ -2,22 +2,24 @@ odoo.define('facture.test', function (require) {
 'use strict';
 
 var X,Y,HEIGHT,WIDTH,D;
+var d;
 var base64;
 var saveElement=null;
+var saveTab=null;
 let myGreatImage = null;
 var Widget = require('web.Widget');
 var rpc = require('web.rpc');
 var core = require('web.core');
 var imageDisplay; //la grande image
-var imageCropDisplay; // image cropped
 var tableauDisplay;
+var imageCropDisplay; // image cropped
 var lienDisplay
 var QWeb = core.qweb;
 var test= Widget.extend({
     template: 'template_testjs',
-    lastElement:[],
     monTableau:null,
     cropper :null,
+
     activeIndex:-1,
     events: {
         'change .imageodoo':'testimage',
@@ -30,7 +32,8 @@ var test= Widget.extend({
 
     init: function (parent, options) {
         imageDisplay=arguments[1].data.imageCode;
-        imageCropDisplay= arguments[1].data.test
+        imageCropDisplay= arguments[1].data.test;
+
              saveElement=null;
 
         this._super.apply(this, arguments);
@@ -40,8 +43,9 @@ var test= Widget.extend({
         var self = this;
         this.monTableau=new Array();
         this.lastElement=new Array();
+        d=this
 
-
+//         console.log(this)
          //save invoice (Display invoice in the widget)
          if(imageDisplay){
         this.renderImage(imageDisplay);
@@ -49,6 +53,7 @@ var test= Widget.extend({
         if(imageCropDisplay){
         this.renderCrop(imageCropDisplay)
         }
+
 
 
     var res = this._super.apply(this, arguments);
@@ -158,6 +163,9 @@ cropImage: function() {
       $('textarea[name=test]').val(base64).change();
     document.getElementById("cropResult").appendChild(img);
     this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", this));
+    saveTab=this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", this))
+
+
 },
 
  editRow: function(ev) {
@@ -223,6 +231,9 @@ require('web.widget_registry').add("template_testjs", test);
 var core = require('web.core');
 var FormController = require('web.FormController');
 FormController.include({
+ renderTab: function(data){
+    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", data));
+ },
     init: function () {
         this._super.apply(this, arguments);
     },
@@ -232,29 +243,39 @@ FormController.include({
     },
 
    _onSave: function (ev) {
-          console.log(this)
-          console.log("on save")
-          this._super.apply(this, arguments);
+//            console.log("onsave ")
+//            console.log("helo" ,saveElement)
+//     console.log(d.__parentedParent.state.id)
+//console.log(lastElement)
+         return this._super.apply(this, arguments);
 
     },
     _confirmSave: function (id) {
     console.log("on confirme save")
     var record = this.model.get(this.handle);
-    console.log(record)
+//      console.log(record)
+//   var p=document.getElementById("cropTable")
     if(record.model=="facture.fact"){
        rpc.query({ async: false,
                                     model: "facture.fact",
                                     method: "createDetails",
-                                    args: [saveElement,record.res_id] }).then(function(responce){console.log(responce)})
+                                    args: [saveElement,record.res_id] }).then(function(responce) {console.log(responce)})
+
                                     saveElement=null;
+
     }
 
     return this._super.apply(this, arguments)
 
     },
+
+
+
+
 _onCreate: function () {
         this.createRecord();
         console.log("create")
+
     },
 
     _onButtonClicked: function (ev) {

@@ -29,6 +29,8 @@ class FactureFact(models.Model):
     name_facture = fields.Char("name")
     model_id = fields.Many2one(comodel_name='ir.model')
 
+    champ=fields.Selection([])
+
 
     codeZoning = fields.Image("code zoning")
 
@@ -91,9 +93,23 @@ class FactureFact(models.Model):
                             # 'model_id': self.model_id.id
                         }
                     ])
+
         if len(tab)>0:
             self.browse(int(id)).write({'detail_ids' : tab})
 
-        return True
+        return data
 
-    def actio
+    def action_open_facture(self):
+        print("Test")
+
+
+
+
+
+
+
+
+
+
+
+

@@ -11,9 +11,12 @@
                  id="uploadedImage">
                 </div>
             <div style="margin-top:30px;margin-left:20px;display:none " id="cropResult"></div>
-
-         <div style="margin-top:40px" id="cropTable">
+            <xpath>
+            <div t-field="fournisseur"></div>
+            </xpath>
+                     <div style="margin-top:40px" id="cropTable">
                  <table class="table">
+
                 <thead>
                  <tr>
                     <th scope="col">X</th>
@@ -21,6 +24,7 @@
                       <th scope="col">HEIGHT</th>
                       <th scope="col">WIDTH</th>
                      <th scope="col" >Actions</th>
+
                   </tr>
                 </thead>
              <tbody>
@@ -29,8 +33,7 @@
                  </table>
          </div>
         </div>
-
-    </t>
+  </t>
     <t t-name="template_imageRender">
         <img style="width:500px;height:800px" t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatImage"/>
     </t>
@@ -49,12 +52,14 @@
                      <th scope="col">Y</th>
                       <th scope="col">HEIGHT</th>
                       <th scope="col">WIDTH</th>
+
                      <th scope="col" >Actions</th>
                   </tr>
                 </thead>
                <tbody id="tableBody"  >
                    <t t-set="item_index" t-value="0"/>
                    <tr class="tableRow"  t-foreach="lastElement" t-as="ligne" t-attf-id="{{ligne.index}}">
+
                     <td>
                         <t id="x" t-esc="ligne.x"/>
                     </td>

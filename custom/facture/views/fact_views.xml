@@ -63,6 +63,8 @@
                             <field name="lines"/>
                             <field name="codeZoning" widget="image"/>
                             <field name="model_id"/>
+                            <field name="champ" />
+
                             <!-- <field name="details_id"/>-->
                         </group>
                     </group>
@@ -106,4 +108,18 @@
         <menuitem name="Facture" id="facture.menu_root"/>
         <!-- menu categories -->
         <menuitem name="Invoice" id="facture_fact_cat" parent="facture.menu_root"/>
-        <!--  <menuitem name="Menu 2" id="facture.menu_2" parent="facture.menu
+        <!--  <menuitem name="Menu 2" id="facture.menu_2" parent="facture.menu_root"/>
+      -->
+        <!-- actions -->
+        <menuitem name="List of invoices" id="facture_fact_list" parent="facture_fact_cat"
+                  action="fact_action_window" sequence="10"/>
+
+        <menuitem name="Create Invoice" id="menu_create_invoice" parent="facture_fact_cat"
+                  action="action_create_facture" sequence="20"/>
+
+
+        <!--  <menuitem name="Server to list" id="facture" parent="facture.menu_2"
+                    action="facture.action_server"/>
+      -->
+    </data>
+</odoo>
