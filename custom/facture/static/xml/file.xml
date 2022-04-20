@@ -11,9 +11,8 @@
                  id="uploadedImage">
                 </div>
             <div style="margin-top:30px;margin-left:20px;display:none " id="cropResult"></div>
-            <xpath>
-            <div t-field="fournisseur"></div>
-            </xpath>
+            <div id="modelData"></div>
+            <div id="fieldsData"></div>
                      <div style="margin-top:40px" id="cropTable">
                  <table class="table">
 
@@ -41,6 +40,22 @@
     <t t-name="template_imageCropRender">
         <img t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatCropImage"/>
     </t>
+    <t t-name="tamplate_model">
+        <div>
+                <select class="selectModel">
+                            <option t-foreach="model" t-as="ligne"  value="ligne.id"><t t-esc ="ligne.name"/></option>
+                        </select>
+        </div>
+
+    </t>
+
+    <t t-name="template_field">
+        <div>
+            <select class="selectField">
+                            <option t-foreach="model" t-as="ligne"  value="ligne.id"><t t-esc ="ligne.name"/></option>
+            </select>
+        </div>
+    </t>
 
     <t t-name="template_cropTableData">
         <div >
@@ -52,7 +67,7 @@
                      <th scope="col">Y</th>
                       <th scope="col">HEIGHT</th>
                       <th scope="col">WIDTH</th>
-
+                       <th scope="col">Filed</th>
                      <th scope="col" >Actions</th>
                   </tr>
                 </thead>
@@ -75,9 +90,21 @@
                     <td>
                                <t id="width" t-esc="ligne.width"/>
                     </td>
+                    <td >
 
+<!--                        <select class="selectFiled">-->
+<!--                            <option value="1">name</option>-->
+<!--                            <option value="2">id</option>-->
+<!--                             <option value="3">description</option>-->
+<!--                             <option value="4">note</option>-->
+
+<!--                        </select>-->
+
+                    </td>
                        <td>
                            <button id="btn-edit" type="button" class="btn btn-primary">Edit</button>
+                       </td>
+                       <td>
                            <button id="btn-delete" type="button" class="btn btn-danger">Delete</button>
                        </td>
                  <t t-set="item_index" t-value="item_index+1"/>

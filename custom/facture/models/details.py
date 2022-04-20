@@ -66,3 +66,20 @@ class FactureDetails(models.Model):
             i.display_image = i.solvedPictureSize(i.facture_id.imageCode, (i.x, i.y, i.width+i.x,i.height+i.y))
 
     display_image = fields.Image("Image", compute=dataImage)
+
+    @api.model
+    def displayDetails(self,facture_id):
+        liste = []
+        if facture_id:
+            search = self.env['facture.details'].search([('facture_id', '=', facture_id)])
+            for i in search:
+                liste.append({
+                    'x': i.x,
+                    'y': i.y,
+                    'width': i.width,
+                    'height': i.height,
+                    'id': i.id
+                })
+
+        return liste
+

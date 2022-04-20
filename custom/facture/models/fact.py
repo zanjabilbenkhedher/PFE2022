@@ -37,7 +37,7 @@ class FactureFact(models.Model):
     test = fields.Text("test")
 
 
-    # @api.onchange('detaille')
+    @api.onchange('detaille')
     def onchangeDetaille(self):
         if self.detaille:
             data = json.loads(self.detaille)
@@ -77,33 +77,63 @@ class FactureFact(models.Model):
         return result
 
     @api.model
-    def createDetails(self,data,id):
+    def createDetails(self,data=[],deleteListe=[],id=False):
         print(data)
         print(id)
         # if self.detaille:
         tab = []
-        for x in range(0, len(data)):
+        if len(deleteListe)>0:
+            self.env['facture.details'].browse(deleteListe).unlink()
+        if data and id:
+            for x in range(0, len(data)):
                 # if not self.checkDetails(data[x]):
-            tab.append([
-                        0, 0, {
+                ligne={
                             'x': data[x]['x'],
                             'y': data[x]['y'],
                             'height': data[x]['height'],
                             'width': data[x]['width'],
                             # 'model_id': self.model_id.id
                         }
+                if not data[x]['id']:
+                    tab.append([
+                        0, 0, ligne
                     ])
+                else:
+                    self.env['facture.details'].browse(int(data[x]['id'])).write(ligne)
+            if len(tab) > 0:
+                self.browse(int(id)).write({'detail_ids': tab})
 
-        if len(tab)>0:
-            self.browse(int(id)).write({'detail_ids' : tab})
+
 
         return data
 
     def action_open_facture(self):
         print("Test")
 
+    @api.model
+    def getModel(self):
+        model = self.env['ir.model'].search([])
+        liste=[]
+        for m in model:
+            liste.append({
+                'id':m.id,
+                'name':m.name,
+            })
 
+        return  liste
 
+    @api.model
+    def getField(self,model_id):
+        model=self.env['ir.model'].search([])
+        field = self.env['ir.model.fields'].search([model_id,'=',model.id])
+        liste = []
+        for f in field:
+            liste.append({
+                'id': f.id,
+                'name': f.name,
+            })
+
+        return liste
 
 
 

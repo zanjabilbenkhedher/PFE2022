@@ -5,8 +5,10 @@ var X,Y,HEIGHT,WIDTH,D;
 var d;
 var base64;
 var saveElement=null;
+var deleteListe=[];
 var saveTab=null;
 let myGreatImage = null;
+var refId;
 var Widget = require('web.Widget');
 var rpc = require('web.rpc');
 var core = require('web.core');
@@ -19,7 +21,6 @@ var test= Widget.extend({
     template: 'template_testjs',
     monTableau:null,
     cropper :null,
-
     activeIndex:-1,
     events: {
         'change .imageodoo':'testimage',
@@ -27,15 +28,16 @@ var test= Widget.extend({
          'click #btn-edit':'editRow',
          'click #btn-delete':'deleteRow',
         'click #myGreatImage':'processImage',
+//        'click .selectFiled':'selectField'
 
     },
 
     init: function (parent, options) {
         imageDisplay=arguments[1].data.imageCode;
         imageCropDisplay= arguments[1].data.test;
-
-             saveElement=null;
-
+        saveElement=null;
+          deleteListe=[];
+        refId=options.data.id
         this._super.apply(this, arguments);
     },
 
@@ -43,9 +45,8 @@ var test= Widget.extend({
         var self = this;
         this.monTableau=new Array();
         this.lastElement=new Array();
-        d=this
 
-//         console.log(this)
+
          //save invoice (Display invoice in the widget)
          if(imageDisplay){
         this.renderImage(imageDisplay);
@@ -53,13 +54,19 @@ var test= Widget.extend({
         if(imageCropDisplay){
         this.renderCrop(imageCropDisplay)
         }
+        setTimeout(function(){
+    self.getDetails()
+}, 700);
 
-
-
+    this.getField()
+    this.getModel()
     var res = this._super.apply(this, arguments);
     return res;
     },
 
+selectField:function(event){
+console.log(event)
+},
 // upload and display invoice
 getImage:function() {
      var self=this;
@@ -94,6 +101,7 @@ renderImage: function(data){
 
  generateHash:function(str, asString, seed) {
     /*jshint bitwise:false */
+    str=JSON.stringify(str).toString()
     var i, l,
         hval = (seed === undefined) ? 0x811c9dc5 : seed;
 
@@ -125,7 +133,7 @@ return -1
     crop(event ) {
        var detaille = event.detail
        detaille["id"]=null
-       detaille["index"]=self.generateHash(event.detail.toString()).toString()
+       detaille["index"]=self.generateHash(event.detail).toString()
         self.monTableau.push(event.detail)
         D=event.detail
         X=event.detail.x
@@ -139,13 +147,27 @@ return -1
   )
 },
 
+initCropper: async function(){
+
+  return true
+},
+
+updateMap:function(map,mapValue){
+var key=Object.keys(mapValue)
+for(let i=0;i<key.length;i++){
+if (!(map[key[i]] && key[i]=='id'))
+map[key[i]]=mapValue[key[i]]
+}
+return map
+},
 //
 cropImage: function() {
     const imgurl = this.cropper.getCroppedCanvas().toDataURL();
     const img = document.createElement("img");
    console.log(this.cropper.getCropBoxData())
     if (this.activeIndex>=0){
-     this.lastElement[this.activeIndex]=this.monTableau[this.monTableau.length-1] ;
+    this.lastElement[this.activeIndex]=this.updateMap(this.lastElement[this.activeIndex],this.monTableau[this.monTableau.length-1])
+//     this.lastElement[this.activeIndex]=this.monTableau[this.monTableau.length-1] ;
      this.activeIndex=-1
     }
     else{
@@ -162,15 +184,11 @@ cropImage: function() {
      .replace(/^.+,/, '');
       $('textarea[name=test]').val(base64).change();
     document.getElementById("cropResult").appendChild(img);
-    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", this));
-    saveTab=this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", this))
-
+    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: this.lastElement}));
 
 },
-
- editRow: function(ev) {
-    var self=this;
-    var id=$(ev.currentTarget).parent().parent().attr('id')
+_edit:function(ev){
+  var id=$(ev.currentTarget).parent().parent().attr('id')
     var index=this.getIndex(this.lastElement,"index" , id)
     var data={
     left:(this.lastElement[index].x*this.getEchelleWidth())+this.cropper.canvasData.left,
@@ -185,6 +203,36 @@ cropImage: function() {
     this.activeIndex=index
 },
 
+ editRow: async function(ev) {
+    var self=this;
+    if(!this.cropper)
+  {
+
+    this.cropper = await new Cropper(document.getElementById('myGreatImage'), {
+     crop(event ) {
+       var detaille = event.detail
+       detaille["id"]=null
+       detaille["index"]=self.generateHash(event.detail).toString()
+        self.monTableau.push(event.detail)
+        D=event.detail
+        X=event.detail.x
+        Y=event.detail.y
+        HEIGHT=event.detail.height
+        WIDTH=event.detail.width
+        const canvas = self.cropper.getCroppedCanvas();
+        return (self.monTableau,X,Y,HEIGHT,WIDTH , D)
+    },
+  ready() {
+     $('#cropButton').css({"display":"block"});
+     self._edit(ev)
+  }
+  })
+  }
+  else {
+  this._edit(ev)
+  }
+},
+
 getEchelleWidth:function(){
 return this.cropper.canvasData.width/this.cropper.canvasData.naturalWidth
 },
@@ -197,20 +245,28 @@ return this.cropper.canvasData.height/this.cropper.canvasData.naturalHeight
 deleteRow: function (ev) {
   var id=$(ev.currentTarget).parent().parent().attr('id')
   var index=this.getIndex(this.lastElement,"index" , id)
- this.deleteFromListe(this.lastElement,parseInt(index))
+  if (this.lastElement[index]['id'])
+      deleteListe.push(this.lastElement[index]['id'])
+
+this.lastElement= this.deleteFromListe(this.lastElement,parseInt(index))
+
   $(ev.currentTarget).parent().parent().remove()
     console.table(this.lastElement);
+        $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+         saveElement=this.lastElement
+         console.log(this.lastElement)
 },
 
 deleteFromListe: function(liste, index){
+var newListe=[]
 for( var i = 0; i < liste.length; i++){
 
-        if ( i == index) {
-            liste.splice(i, 1);
-            i--;
+        if ( i != index) {
+          newListe.push(liste[i])
+
         }
     }
-    return liste
+    return newListe
 },
 // invoice widget
 renderCrop: function(data){
@@ -221,7 +277,49 @@ renderCrop: function(data){
 testimage: function(e) {
 //     console.log(e);
      this.getImage();
-    }
+    },
+
+HashData:function(data){
+for (let i=0;i<data.length;i++){
+ data[i]["index"]=this.generateHash(data[i]).toString()
+}
+return data
+},
+getDetails:function(){
+       var self=this
+       rpc.query({ async: false,
+                                    model: "facture.details",
+                                    method: "displayDetails",
+                                    args: [refId] }).then(function(responce) {
+                                    self.lastElement=self.HashData(responce)
+                                    self.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: self.lastElement}));
+                                    console.log(responce)
+                                    })
+},
+
+getModel:function(){
+    var self=this
+      rpc.query({ async: false,
+                                    model: "facture.fact",
+                                    method: "getModel",
+                                    args: [] }).then(function(responce) {
+                                    self.$el.find('#modelData').html(QWeb.render("tamplate_model",{model: responce}));
+                                    console.log(responce)
+                                    })
+},
+
+getField:function(){
+    var self=this
+
+      rpc.query({ async: false,
+                                    model: "facture.fact",
+                                    method: "getField",
+                                    args: [175] }).then(function(responce) {
+                                    self.$el.find('#fieldsData').html(QWeb.render("template_field",{model: responce}));
+                                    console.log(responce)
+                                    })
+},
+
 });
 
 require('web.widget_registry').add("template_testjs", test);
@@ -259,9 +357,11 @@ FormController.include({
        rpc.query({ async: false,
                                     model: "facture.fact",
                                     method: "createDetails",
-                                    args: [saveElement,record.res_id] }).then(function(responce) {console.log(responce)})
+                                    args: [saveElement,deleteListe,record.res_id] }).then(function(responce) {console.log(responce)})
 
                                     saveElement=null;
+                                    deleteListe=[];
+
 
     }
 
