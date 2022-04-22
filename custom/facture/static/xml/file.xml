@@ -2,35 +2,20 @@
 <templates id="template_testjs" xml:space="preserve">
     <t t-name="template_testjs">
         <div>
-             <input style="color:#F5F5F5" name="imageCode" id="imageodoo" class="imageodoo" type="file"/>
+             <input style="color:white" name="imageCode" id="imageodoo" class="imageodoo" type="file"/>
             <!--            <button style="color:#F5F5F5" id="selctionner" >selctionner</button>-->
-            <button style="margin-left:20px" class="btn btn-light" id="cropButton">Crop</button>
+             <div  style="margin-left:20px; margin-top:20px;margin-right:900px" id="modelData"></div>
 
-            <!--                 <button style="margin-bottom:20px" class=" btn btn-danger" id="generate" >tableau</button>-->
-            <div style="border:4px solid #7C7BAD ; width: 500px ; margin-top:30px ; margin-left:20px" name="imgFi"
+            <button style="margin-left:20px; margin-bottom:20px" class="btn btn-light" id="cropButton">Crop</button>
+
+            <!-- <button style="margin-bottom:20px" class=" btn btn-danger" id="generate" >tableau</button>-->
+         <div style="border:4px solid #7C7BAD ; width: 500px ; margin-top:30px ; margin-left:300px" name="imgFi"
                  id="uploadedImage">
                 </div>
+                          <div style="margin-top:40px" id="cropTable"> </div>
+
             <div style="margin-top:30px;margin-left:20px;display:none " id="cropResult"></div>
-            <div id="modelData"></div>
-            <div id="fieldsData"></div>
-                     <div style="margin-top:40px" id="cropTable">
-                 <table class="table">
 
-                <thead>
-                 <tr>
-                    <th scope="col">X</th>
-                     <th scope="col">Y</th>
-                      <th scope="col">HEIGHT</th>
-                      <th scope="col">WIDTH</th>
-                     <th scope="col" >Actions</th>
-
-                  </tr>
-                </thead>
-             <tbody>
-
-             </tbody>
-                 </table>
-         </div>
         </div>
   </t>
     <t t-name="template_imageRender">
@@ -42,24 +27,25 @@
     </t>
     <t t-name="tamplate_model">
         <div>
-                <select class="selectModel">
-                            <option t-foreach="model" t-as="ligne"  value="ligne.id"><t t-esc ="ligne.name"/></option>
+                <select id="mySelect" class="form-select form-select-sm" aria-label=".form-select-sm example">
+                    <option t-if="ligne.id !=model_id"   t-foreach="model" t-as="ligne"  t-attf-value="{{ligne.id}}" ><t t-esc ="ligne.name" /></option>
+                    <option t-if="ligne.id ==model_id" selected="1"   t-foreach="model" t-as="ligne"  t-attf-value="{{ligne.id}}" ><t t-esc ="ligne.name" /></option>
                         </select>
         </div>
 
     </t>
 
+
     <t t-name="template_field">
         <div>
-            <select class="selectField">
-                            <option t-foreach="model" t-as="ligne"  value="ligne.id"><t t-esc ="ligne.name"/></option>
+            <select class=" inv_fildsListeSave form-select form-select-sm" aria-label=".form-select-sm example">
+                            <option t-foreach="fields" t-as="ligne"  t-attf-value="{{ligne.id}}" ><t t-esc ="ligne.name"/></option>
             </select>
         </div>
     </t>
 
     <t t-name="template_cropTableData">
         <div >
-            <t t-esc="lastElement"  />
             <table  class="table" >
                 <thead>
                  <tr >
@@ -68,7 +54,8 @@
                       <th scope="col">HEIGHT</th>
                       <th scope="col">WIDTH</th>
                        <th scope="col">Filed</th>
-                     <th scope="col" >Actions</th>
+                     <th scope="col" >EDIT</th>
+                      <th scope="col" >DELETE</th>
                   </tr>
                 </thead>
                <tbody id="tableBody"  >
@@ -90,15 +77,14 @@
                     <td>
                                <t id="width" t-esc="ligne.width"/>
                     </td>
-                    <td >
+                    <td class="inv_fieldListeSelect" >
+                          <div>
 
-<!--                        <select class="selectFiled">-->
-<!--                            <option value="1">name</option>-->
-<!--                            <option value="2">id</option>-->
-<!--                             <option value="3">description</option>-->
-<!--                             <option value="4">note</option>-->
-
-<!--                        </select>-->
+            <select  t-attf-value="{{ligne.field_id}}" class=" inv_fildsListeSave form-select form-select-sm" aria-label=".form-select-sm example">
+                <option t-if="field.id != ligne.field_id" t-foreach="fields" t-as="field"  t-attf-value="{{field.id}}" ><t t-esc ="field.name"/></option>
+                 <option t-if="field.id == ligne.field_id" selected="1" t-foreach="fields" t-as="field"  t-attf-value="{{field.id}}" ><t t-esc ="field.name"/></option>
+            </select>
+        </div>
 
                     </td>
                        <td>

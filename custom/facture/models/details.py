@@ -78,7 +78,8 @@ class FactureDetails(models.Model):
                     'y': i.y,
                     'width': i.width,
                     'height': i.height,
-                    'id': i.id
+                    'id': i.id,
+                    'field_id':i.field_id.id,
                 })
 
         return liste

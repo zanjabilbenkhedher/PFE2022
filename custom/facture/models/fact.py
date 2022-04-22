@@ -6,15 +6,15 @@ import json
 class FactureFact(models.Model):
     _name = 'facture.fact'
     fournisseur = fields.Char("Supplier")
-    vat = fields.Text("Vat")
-    adresse=fields.Text("Adresse")
+    vat = fields.Char("Vat")
+    adresse=fields.Char("Adresse")
     billDate=fields.Date("Bill Date")
     dueDate = fields.Date("Due Date")
-    iban=fields.Text("IBAN")
-    currency=fields.Text("Currence")
+    iban=fields.Char("IBAN")
+    currency=fields.Char("Currence")
     montantT = fields.Float("Total")
     reference = fields.Char("Reference")
-    lines=fields.Text("Lines")
+    lines=fields.Char("Lines")
     detaille = fields.Text("detaille image")
     imageCode = fields.Text()
     prescription = fields.Text(string="Prescription")
@@ -29,15 +29,13 @@ class FactureFact(models.Model):
     name_facture = fields.Char("name")
     model_id = fields.Many2one(comodel_name='ir.model')
 
-    champ=fields.Selection([])
 
-
-    codeZoning = fields.Image("code zoning")
+    codeZoning = fields.Image("Invoice Model")
 
     test = fields.Text("test")
 
 
-    @api.onchange('detaille')
+    # @api.onchange('detaille')
     def onchangeDetaille(self):
         if self.detaille:
             data = json.loads(self.detaille)
@@ -77,11 +75,13 @@ class FactureFact(models.Model):
         return result
 
     @api.model
-    def createDetails(self,data=[],deleteListe=[],id=False):
+    def createDetails(self,data=[],model_id=False,deleteListe=[],id=False):
         print(data)
         print(id)
         # if self.detaille:
         tab = []
+        if model_id:
+            self.browse(int(id)).write({'model_id':model_id})
         if len(deleteListe)>0:
             self.env['facture.details'].browse(deleteListe).unlink()
         if data and id:
@@ -92,6 +92,7 @@ class FactureFact(models.Model):
                             'y': data[x]['y'],
                             'height': data[x]['height'],
                             'width': data[x]['width'],
+                            'field_id':data[x]['field_id'],
                             # 'model_id': self.model_id.id
                         }
                 if not data[x]['id']:
@@ -120,12 +121,14 @@ class FactureFact(models.Model):
                 'name':m.name,
             })
 
+
         return  liste
+
 
     @api.model
     def getField(self,model_id):
-        model=self.env['ir.model'].search([])
-        field = self.env['ir.model.fields'].search([model_id,'=',model.id])
+        # model=self.env['ir.model'].search([('name','=',model_id)])
+        field = self.env['ir.model.fields'].search([('model_id','=',model_id)])
         liste = []
         for f in field:
             liste.append({
@@ -133,8 +136,12 @@ class FactureFact(models.Model):
                 'name': f.name,
             })
 
+        print(liste)
         return liste
 
+    @api.model
+    def getModelId(self,id):
+        return self.browse(id).model_id.id
 
 
 

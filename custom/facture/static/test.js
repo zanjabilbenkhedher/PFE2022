@@ -5,7 +5,10 @@ var X,Y,HEIGHT,WIDTH,D;
 var d;
 var base64;
 var saveElement=null;
+var saveModel=null;
 var deleteListe=[];
+var basicController=require('web.BasicController')
+var canLoad=true;
 var saveTab=null;
 let myGreatImage = null;
 var refId;
@@ -21,13 +24,18 @@ var test= Widget.extend({
     template: 'template_testjs',
     monTableau:null,
     cropper :null,
+    listeFields:[],
     activeIndex:-1,
     events: {
         'change .imageodoo':'testimage',
+        'change .inv_fildsListeSave':'saveFields',
         'click #cropButton':'cropImage',
          'click #btn-edit':'editRow',
          'click #btn-delete':'deleteRow',
         'click #myGreatImage':'processImage',
+        'change #mySelect':'getField',
+        'click #btn':'getField',
+
 //        'click .selectFiled':'selectField'
 
     },
@@ -36,8 +44,9 @@ var test= Widget.extend({
         imageDisplay=arguments[1].data.imageCode;
         imageCropDisplay= arguments[1].data.test;
         saveElement=null;
-          deleteListe=[];
+        deleteListe=[];
         refId=options.data.id
+
         this._super.apply(this, arguments);
     },
 
@@ -46,7 +55,6 @@ var test= Widget.extend({
         this.monTableau=new Array();
         this.lastElement=new Array();
 
-
          //save invoice (Display invoice in the widget)
          if(imageDisplay){
         this.renderImage(imageDisplay);
@@ -54,16 +62,41 @@ var test= Widget.extend({
         if(imageCropDisplay){
         this.renderCrop(imageCropDisplay)
         }
-        setTimeout(function(){
-    self.getDetails()
-}, 700);
 
-    this.getField()
-    this.getModel()
+        this.loadDetail()
+
+
+
+
     var res = this._super.apply(this, arguments);
     return res;
     },
 
+loadDetail:function(){
+var self=this
+        setTimeout(function(){
+        if (canLoad){
+              rpc.query({ async: false,
+                                    model: "facture.fact",
+                                    method: "getModelId",
+                                    args: [refId] }).then(function(responce) {
+                                    saveModel=responce
+                                    self.getModel()
+                                           if (saveModel){
+                                  self._getField(saveModel).then(function(res){
+                                  self.getDetails()
+                                  })
+//        }
+}else
+          self.getDetails()
+                                    })
+        }
+        else{
+         self.loadDetail()
+        }
+
+}, 1000);
+},
 selectField:function(event){
 console.log(event)
 },
@@ -132,9 +165,10 @@ return -1
     this.cropper = new Cropper(document.getElementById('myGreatImage'), {
     crop(event ) {
        var detaille = event.detail
+       detaille['field_id']=null
        detaille["id"]=null
-       detaille["index"]=self.generateHash(event.detail).toString()
-        self.monTableau.push(event.detail)
+       detaille["index"]=self.generateHash(detaille).toString()
+        self.monTableau.push(detaille)
         D=event.detail
         X=event.detail.x
         Y=event.detail.y
@@ -176,7 +210,7 @@ cropImage: function() {
     saveElement=this.lastElement
     console.table(this.lastElement);
     var index =this.lastElement.indexOf(D)
-    $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+//    $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
     img.src = imgurl;
     img.id="myGreatCropImage"
      var base64 = img.src
@@ -184,9 +218,14 @@ cropImage: function() {
      .replace(/^.+,/, '');
       $('textarea[name=test]').val(base64).change();
     document.getElementById("cropResult").appendChild(img);
-    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: this.lastElement}));
+    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: this.lastElement , fields:this.listeFields}));
 
 },
+
+renderField:function(){
+this.$el.find('.inv_fieldListeSelect').html(QWeb.render("template_field",{fields: this.listeFields}));
+},
+
 _edit:function(ev){
   var id=$(ev.currentTarget).parent().parent().attr('id')
     var index=this.getIndex(this.lastElement,"index" , id)
@@ -211,9 +250,10 @@ _edit:function(ev){
     this.cropper = await new Cropper(document.getElementById('myGreatImage'), {
      crop(event ) {
        var detaille = event.detail
+       detaille['field_id']=null
        detaille["id"]=null
-       detaille["index"]=self.generateHash(event.detail).toString()
-        self.monTableau.push(event.detail)
+       detaille["index"]=self.generateHash(detaille).toString()
+        self.monTableau.push(detaille)
         D=event.detail
         X=event.detail.x
         Y=event.detail.y
@@ -252,7 +292,7 @@ this.lastElement= this.deleteFromListe(this.lastElement,parseInt(index))
 
   $(ev.currentTarget).parent().parent().remove()
     console.table(this.lastElement);
-        $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+//        $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
          saveElement=this.lastElement
          console.log(this.lastElement)
 },
@@ -292,7 +332,7 @@ getDetails:function(){
                                     method: "displayDetails",
                                     args: [refId] }).then(function(responce) {
                                     self.lastElement=self.HashData(responce)
-                                    self.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: self.lastElement}));
+                                    self.$el.find('#cropTable').html(QWeb.render("template_cropTableData",{lastElement: self.lastElement , fields:self.listeFields}));
                                     console.log(responce)
                                     })
 },
@@ -303,35 +343,91 @@ getModel:function(){
                                     model: "facture.fact",
                                     method: "getModel",
                                     args: [] }).then(function(responce) {
-                                    self.$el.find('#modelData').html(QWeb.render("tamplate_model",{model: responce}));
-                                    console.log(responce)
+                                    self.$el.find('#modelData').html(QWeb.render("tamplate_model",{model: responce , model_id:saveModel}));
+                                    console.log("save",saveModel)
+
                                     })
 },
+
 
 getField:function(){
-    var self=this
-
-      rpc.query({ async: false,
-                                    model: "facture.fact",
-                                    method: "getField",
-                                    args: [175] }).then(function(responce) {
-                                    self.$el.find('#fieldsData').html(QWeb.render("template_field",{model: responce}));
-                                    console.log(responce)
-                                    })
+      saveModel=parseInt(document.getElementById("mySelect").value)
+      this._getField(saveModel)
 },
 
+_getField:async function(model_id){
+    var self=this
+
+      await rpc.query({ async: false,
+                                    model: "facture.fact",
+                                    method: "getField",
+                                    args: [model_id] }).then(function(responce) {
+                                    self.$el.find('#fieldsData').html(QWeb.render("template_field",{fields: responce}));
+                                    console.log(responce)
+                                    self.listeFields=responce
+                                    self.renderField()
+                                    })
+
+                                    return true
+},
+
+saveFields:function(ev){
+  var id=$(ev.currentTarget).parent().parent().parent().attr('id')
+    var index=this.getIndex(this.lastElement,"index" , id)
+    this.lastElement[index]['field_id']=parseInt($(ev.currentTarget).val())
+//     $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+     saveElement=this.lastElement
+
+},
 });
 
 require('web.widget_registry').add("template_testjs", test);
 
 
+basicController.include({
+ _saveRecord: function(recordID, options) {
+ console.log("save record")
+            if (this.modelName=='facture.fact'){
+
+            recordID = recordID || this.handle;
+            options = _.defaults(options || {}, {
+                stayInEdit: false,
+                reload: true,
+                savePoint: false,
+            });
+            if (this.canBeSaved(recordID)) {
+                var self = this;
+                var saveDef = this.model.save(recordID, {
+                    reload: options.reload,
+                    savePoint: options.savePoint,
+                    viewType: options.viewType,
+                });
+                if (!options.stayInEdit) {
+                    saveDef = saveDef.then(function(fieldNames) {
+                        var def =  self._confirmSave(recordID);
+                        return def.then(function() {
+                            return fieldNames;
+                        });
+                    });
+                }
+                return saveDef;
+            } else {
+                return Promise.reject("SaveRecord: this.canBeSave is false");
+            }
+            }
+            else{
+            return  this._super.apply(this, arguments);
+            }
+        },
+
+});
 
 var core = require('web.core');
 var FormController = require('web.FormController');
 FormController.include({
- renderTab: function(data){
-    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", data));
- },
+// renderTab: function(data){
+//    this.$el.find('#cropTable').html(QWeb.render("template_cropTableData", data));
+// },
     init: function () {
         this._super.apply(this, arguments);
     },
@@ -354,10 +450,16 @@ FormController.include({
 //      console.log(record)
 //   var p=document.getElementById("cropTable")
     if(record.model=="facture.fact"){
+    canLoad=false
+       var _saveModel=saveModel
        rpc.query({ async: false,
                                     model: "facture.fact",
                                     method: "createDetails",
-                                    args: [saveElement,deleteListe,record.res_id] }).then(function(responce) {console.log(responce)})
+                                    args: [saveElement,saveModel,deleteListe,record.res_id] }).then(function(responce) {console.log(responce)
+                                      canLoad=true
+                                    saveModel=_saveModel
+
+                                    })
 
                                     saveElement=null;
                                     deleteListe=[];
@@ -368,8 +470,6 @@ FormController.include({
     return this._super.apply(this, arguments)
 
     },
-
-
 
 
 _onCreate: function () {

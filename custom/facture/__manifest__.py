@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 {
-    'name': 'facture',
+    'name': 'Invoice Recognition',
     'version': '1.0',
-    'summary': 'upload facture',
+    'summary': 'Invoice',
     'sequence': 10,
     'description': """""",
     'category': 'Accounting/Accounting',
@@ -15,7 +15,6 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-
     # always loaded
     'data': [
         # 'security/ir.model.access.csv',

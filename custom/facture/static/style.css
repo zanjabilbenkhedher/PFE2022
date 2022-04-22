@@ -27,7 +27,6 @@
 }
 
 #imageodoo{
-margin_bottom:30px;
 margin-left:20px
 }
 
@@ -36,6 +35,11 @@ margin-bottom:20px;
 margin-top:50px
 
 }
+
+grid{
+display:grid;
+grid-template-columns: 3fr 2fr;
+grid-template-rows:20px}
 
 
 
