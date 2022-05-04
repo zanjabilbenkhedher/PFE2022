@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 import json
-
-
+import base64
+from PIL import Image
+from io import BytesIO
 class FactureFact(models.Model):
     _name = 'facture.fact'
     fournisseur = fields.Char("Supplier")
@@ -28,10 +29,10 @@ class FactureFact(models.Model):
     _rec_name = "name_seq"
     name_facture = fields.Char("name")
     model_id = fields.Many2one(comodel_name='ir.model')
-
-
+    child_ids = fields.One2many('facture.fact', 'parent_id')
+    parent_id= fields.Many2one('facture.fact')
+    last_date = fields.Date(string='last_create', default=fields.Date.today(), required=True, copy=False)
     codeZoning = fields.Image("Invoice Model")
-
     test = fields.Text("test")
 
 
@@ -80,6 +81,9 @@ class FactureFact(models.Model):
         print(id)
         # if self.detaille:
         tab = []
+        modelId=False
+        if id:
+            modelId=self.browse(int(id))
         if model_id:
             self.browse(int(id)).write({'model_id':model_id})
         if len(deleteListe)>0:
@@ -92,13 +96,23 @@ class FactureFact(models.Model):
                             'y': data[x]['y'],
                             'height': data[x]['height'],
                             'width': data[x]['width'],
+                            'isTable':data[x]['isTable'],
                             'field_id':data[x]['field_id'],
                             # 'model_id': self.model_id.id
                         }
+
                 if not data[x]['id']:
                     tab.append([
                         0, 0, ligne
                     ])
+                    if data[x]['isTable']:
+                        self.create({
+                            'parent_id': modelId.id,
+                            'imageCode': self.env['facture.details']._cropImage(modelId.imageCode,
+                                                                                (data[x]['x'], data[x]['y'],
+                                                                                 data[x]['width'] + data[x]['x'],
+                                                                                 data[x]['height'] + data[x]['y']))
+                        })
                 else:
                     self.env['facture.details'].browse(int(data[x]['id'])).write(ligne)
             if len(tab) > 0:
@@ -142,11 +156,3 @@ class FactureFact(models.Model):
     @api.model
     def getModelId(self,id):
         return self.browse(id).model_id.id
-
-
-
-
-
-
-
-

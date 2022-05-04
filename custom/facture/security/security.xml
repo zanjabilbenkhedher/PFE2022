@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.module.category" id="module_category_facture">
+     <field name="name" >Invoice Management</field>
+        <field name="description" >Category For Invoice </field>
+    </record>
+
+      <record id="group_facture_modelManager" model="res.groups">
+        <field name="name">ModelManager</field>
+          <field name="category_id" ref="module_category_facture"/>
+    </record>
+
+    <record id="group_facture_owner" model="res.groups">
+        <field name="name">Owner</field>
+         <field name="category_id" ref="module_category_facture"/>
+        <field name="implied_ids" eval="[(4, ref('group_facture_modelManager'))]"/>
+    </record>
+
+
+      <record id="group_facture_administrator" model="res.groups">
+        <field name="name">Adminstrator</field>
+           <field name="category_id" ref="module_category_facture"></field>
+    </record>
+</odoo>

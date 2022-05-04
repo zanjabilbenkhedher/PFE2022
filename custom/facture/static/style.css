@@ -17,6 +17,10 @@
     display: none;
 
 }
+ #cropTableButton{
+ display: none;
+
+ }
 ::-webkit-file-upload-button {
   background: #7C7BAD;
   color: #FFFFFF;
@@ -32,7 +36,7 @@ margin-left:20px
 
 #cropButton{
 margin-bottom:20px;
-margin-top:50px
+margin-top:10px
 
 }
 

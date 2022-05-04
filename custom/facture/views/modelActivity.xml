@@ -1,0 +1,65 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record model="ir.ui.view" id="model_activity_list_view">
+            <field name="name">Model Activity list</field>
+            <field name="model">facture.model.activity</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="last_date" />
+                    <field name="invoicemodel_id"/>
+                    <field name="model_id"/>
+                    <field name="res_id"/>
+
+
+                </tree>
+            </field>
+        </record>
+
+        <!-- explicit form view definition -->
+
+        <record model="ir.ui.view" id="model_activity_form_view">
+            <field name="name">Model Activity list</field>
+            <field name="model">facture.model.activity</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,validate,reject"/>
+                    </header>
+                    <sheet>
+
+
+
+                        <group style="margin-top:30px">
+                            <group>
+                                    <field name="name"/>
+                                  <field name="invoicemodel_id"/>
+                            </group>
+                            <group>
+                                <field name="model_id"/>
+                               <field name="res_id"/>
+                            </group>
+                            <group>
+                                <field name="compare"/>
+                                <field name="showImage"/>
+                            </group>
+
+                        </group>
+                    </sheet>
+                </form>
+
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="model_activity_action_window">
+            <field name="name">Model Activity window</field>
+            <field name="res_model">facture.model.activity</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>

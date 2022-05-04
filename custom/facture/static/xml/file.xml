@@ -3,15 +3,14 @@
     <t t-name="template_testjs">
         <div>
              <input style="color:white" name="imageCode" id="imageodoo" class="imageodoo" type="file"/>
-            <!--            <button style="color:#F5F5F5" id="selctionner" >selctionner</button>-->
-             <div  style="margin-left:20px; margin-top:20px;margin-right:900px" id="modelData"></div>
-
-            <button style="margin-left:20px; margin-bottom:20px" class="btn btn-light" id="cropButton">Crop</button>
-
-            <!-- <button style="margin-bottom:20px" class=" btn btn-danger" id="generate" >tableau</button>-->
+            <div>
+                <button style="margin-left:20px; margin-bottom:20px" class="btn btn-light" id="cropButton">Crop</button>
+          <button style="margin-left:20px; margin-bottom:20px" class="btn btn-light" id="cropTableButton">Crop Table</button>
+            </div>
          <div style="border:4px solid #7C7BAD ; width: 500px ; margin-top:30px ; margin-left:300px" name="imgFi"
                  id="uploadedImage">
                 </div>
+             <div  style="margin-left:20px; margin-top:20px;margin-right:900px" id="modelData"></div>
                           <div style="margin-top:40px" id="cropTable"> </div>
 
             <div style="margin-top:30px;margin-left:20px;display:none " id="cropResult"></div>
@@ -53,6 +52,7 @@
                      <th scope="col">Y</th>
                       <th scope="col">HEIGHT</th>
                       <th scope="col">WIDTH</th>
+                     <th scope="col">IsTable</th>
                        <th scope="col">Filed</th>
                      <th scope="col" >EDIT</th>
                       <th scope="col" >DELETE</th>
@@ -77,6 +77,9 @@
                     <td>
                                <t id="width" t-esc="ligne.width"/>
                     </td>
+                       <td>
+                            <t  t-esc="ligne.isTable"/>
+                       </td>
                     <td class="inv_fieldListeSelect" >
                           <div>
 

@@ -7,18 +7,16 @@
                 <form string="Create New Invoice">
                     <group class="oe_title">
                         <field name="uploadedFacture"  />
-                        <field name="uploadedFacture2"  />
-<!--                    <field name="invoice_id"/>-->
-                        <field name="fournisseur"/>
-                        <field name="model"/>
+                        <field name="display_facture_image" string="" widget="image"/>
+
+             <!--       <field name="model"/>-->
 
                     </group>
                     <footer>
 <!--                        <button name="action_lost_reason_apply" string="Submit" type="object" class="btn-primary"/>-->
-                         <button name="action_create_invoice" type="object" string="Create" class="btn-primary"/>
-                        <button name="comparaison" type="object" string="Comparate" class="btn-primary"/>
-                          <button name="zoning" type="object" string="zoning" class="btn-primary"/>
-                        <button name="read_model" type="object" string="read_model" class="btn-primary"/>
+<!--                         <button name="action_create_invoice" type="object" string="Create" class="btn-primary"/>-->
+
+                        <button name="read_model" type="object" string="Create" class="btn-primary"/>
                         <button string="Cancel" class="btn-secondary" special="cancel"/>
                     </footer>
                 </form>
@@ -34,3 +32,4 @@
             <field name="target">new</field>
         </record>
 </odoo>
+

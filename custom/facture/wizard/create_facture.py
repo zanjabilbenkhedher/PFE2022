@@ -11,13 +11,31 @@ import io
 class CreateFactureWiz(models.TransientModel):
     _name = 'create.facture.wizard'
     _description = "Create invoice  wizard"
-    uploadedFacture = fields.Image(string='Upload Invoice')
-    uploadedFacture2 = fields.Image(string='Upload Invoice2')
-    invoice_id = fields.Many2one('facture.fact', string="invoice" ,)
+    uploadedFacture = fields.Image(string='Upload Your File')
+    invoice_id = fields.Many2one('facture.fact', string="invoice" )
     model = fields.Many2one('facture.fact', string="Model", )
     # i1 = Image.open(BytesIO(base64.b64decode(self.uploadedFacture)))
-    fournisseur = fields.Text('fournisseur')
     imageCode = fields.Text('imageCode')
+    activity_id = fields.Many2one('facture.model.activity', string="invoice")
+
+    def displayFacture(self):
+        for i in self:
+            i.display_facture_image = i.uploadedFacture
+
+    display_facture_image = fields.Image(compute=displayFacture)
+
+    @api.onchange('Facture_image')
+    def _onchange_field(self):
+        for i in self:
+            i.display_facture_image = i.uploadedFacture
+
+    display_facture_image = fields.Image(compute=displayFacture)
+
+
+    @api.onchange('uploadedFacture')
+    def _onchange_field(self):
+        for i in self:
+            i.display_facture_image = i.uploadedFacture
 
     def action_create_invoice(self):
         vals = {
@@ -45,13 +63,21 @@ class CreateFactureWiz(models.TransientModel):
             i2 = Image.open(BytesIO(base64.b64decode(img2)))
             i2 = i2.resize((500, 500), Image.ANTIALIAS)
             # print(self.uploadedFacture)
-            assert i1.mode == i2.mode, "Different kinds of images."
-            assert i1.size == i2.size, "Different sizes."
+            # assert i1.mode == i2.mode, "Different kinds of images."
+            # assert i1.size == i2.size, "Different sizes."
 
             pairs = zip(i1.getdata(), i2.getdata())
             if len(i1.getbands()) == 1:
                 # for gray-scale jpegs
-                dif = sum(abs(p1 - p2) for p1, p2 in pairs)
+                dif=0
+                for p1,p2 in pairs:
+                    if not p1 is list and not p1 is tuple:
+                        p1=[p1]
+                    val=zip(p1,p2)
+                    if val :
+                        for c1,c2 in val:
+                            dif+=abs(c1-c2)
+                # dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
             else:
                 dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
 
@@ -68,9 +94,9 @@ class CreateFactureWiz(models.TransientModel):
 
 
     def draw_rectangle(self , w , h , img , x , y):
-        shape = [(x, y), (w, h)]
+        shape = [(x, y), (w+x, h+y)]
         draw = ImageDraw.Draw(img)
-        draw.rectangle(shape, fill=256)
+        draw.rectangle(shape, fill=200)
         return img
 
     def model_zoning(self , model , image):
@@ -99,46 +125,51 @@ class CreateFactureWiz(models.TransientModel):
         model = self.env['facture.fact'].search([])
         min = -1
         model_min = False
+        ICPSudo = self.env['ir.config_parameter'].sudo()
+        pourcentages = ICPSudo.get_param('facture.pourcentage')
         for m in model:
             im1 = self.model_zoning(m, m.imageCode)
             im2 = self.model_zoning(m, img)
             if im1 and im2:
+
+
                 valeur = self.compare(im1, im2)
-                if min == -1:
-                    min = valeur
-                    model_min = m
-                elif valeur < min:
-                    min = valeur
-                    model_min = m
+                if float(pourcentages)> valeur:
+                    if min == -1:
+                        min = valeur
+                        model_min = m
+                    elif valeur < min:
+                        min = valeur
+                        model_min = m
 
 
         print(model_min)
         print(min)
-        return  model_min
+        return  model_min,min
 
     def read_model(self):
         liste = {
 
         }
-        model = self.find_model(self.uploadedFacture)
+        res = False
+        model,compareValue = self.find_model(self.uploadedFacture)
+
         if model:
             for i in model.detail_ids:
                 liste[i.field_id.name] = i.readText(self.uploadedFacture)
 
-            self.env[model.model_id.model].create(liste)
+            res=self.env[model.model_id.model].create(liste)
+        self.env['facture.model.activity'].create({
+                'invoicemodel_id':model.id if model else False,
+                'model_id': model.model_id.id if model else False,
+                'res_id': res.id if model else False,
+                'compare': compareValue if model else False,
+                'showImage':self.uploadedFacture,
+                'state':'validate' if model else 'progress'
+
+        })
 
         print(liste)
-
-
-
-
-
-
-
-
-
-
-
     def zoning2(self):
         # i1 = Image.open(BytesIO(base64.b64encode(self.uploadedFacture)))
         img = cv2.imread("images/facture.png")
@@ -209,8 +240,3 @@ class CreateFactureWiz(models.TransientModel):
 
         # self.uploadedFacture=self.uploadedFacture
         # self.invoice_id = self.uploadedFacture
-
-
-
-
-

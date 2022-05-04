@@ -7,10 +7,13 @@
             <field name="model">facture.details</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="facture_id"/>
+                    <field name="last_date" />
                     <field name="x"/>
                     <field name="y"/>
                     <field name="height"/>
                     <field name="width"/>
+
 
                 </tree>
             </field>
@@ -66,21 +69,6 @@
             <field name="view_mode">tree,form</field>
         </record>
 
-        <!-- Top menu item -->
 
-        <menuitem name="Facture" id="facture.menu_root"/>
-
-        <!-- menu categories -->
-
-        <menuitem name="Details" id="facture_details_cat" parent="facture.menu_root"/>
-        <!--    <menuitem name="Menu 2" id="details_image.menu_2" parent="details_image.menu_root"/>
-        -->
-        <!-- actions -->
-
-        <menuitem name="List of details" id="facture_details_list" parent="facture_details_cat"
-                  action="details_action_window"/>
-        <!--    <menuitem name="Server to list" id="details_image" parent="details_image.menu_2"
-                      action="details_image.action_server"/>
-        -->
     </data>
 </odoo>

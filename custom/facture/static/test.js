@@ -30,6 +30,7 @@ var test= Widget.extend({
         'change .imageodoo':'testimage',
         'change .inv_fildsListeSave':'saveFields',
         'click #cropButton':'cropImage',
+        'click #cropTableButton':'cropTable',
          'click #btn-edit':'editRow',
          'click #btn-delete':'deleteRow',
         'click #myGreatImage':'processImage',
@@ -162,6 +163,7 @@ return -1
  processImage: function() {
     var self=this;
     $('#cropButton').css({"display":"block"});
+    $('#cropTableButton').css({"display":"block"});
     this.cropper = new Cropper(document.getElementById('myGreatImage'), {
     crop(event ) {
        var detaille = event.detail
@@ -195,7 +197,15 @@ map[key[i]]=mapValue[key[i]]
 return map
 },
 //
-cropImage: function() {
+cropTable:function(){
+this._cropImage(1)
+},
+
+cropImage:function(){
+this._cropImage(0)
+},
+
+_cropImage: function(isTable) {
     const imgurl = this.cropper.getCroppedCanvas().toDataURL();
     const img = document.createElement("img");
    console.log(this.cropper.getCropBoxData())
@@ -205,6 +215,7 @@ cropImage: function() {
      this.activeIndex=-1
     }
     else{
+    this.monTableau[this.monTableau.length-1]["isTable"]=isTable;
      this.lastElement.push(this.monTableau[this.monTableau.length-1]) ;
     }
     saveElement=this.lastElement

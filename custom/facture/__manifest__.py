@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 {
-    'name': 'Invoice Recognition',
+    'name': 'facture',
     'version': '1.0',
-    'summary': 'Invoice',
+    'summary': 'upload facture',
     'sequence': 10,
     'description': """""",
     'category': 'Accounting/Accounting',
@@ -15,14 +16,21 @@
     'installable': True,
     'application': True,
     'auto_install': False,
-    # always loaded
+ # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'wizard/create_facture_views.xml',
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/fact_views.xml',
-        'views/template.xml',
         'views/details_views.xml',
-        'data/sequence.xml'
+        'views/template.xml',
+        'views/settings.xml',
+        'views/modelActivity.xml',
+        'views/users.xml',
+        'wizard/create_facture.xml',
+        'data/sequence.xml',
+        'security/rule.xml',
+        'views/menuitem.xml',
+
 
 
     ],
@@ -30,7 +38,7 @@
     'demo': [
         'demo/demo.xml',
     ],
-    'qweb': [
+'qweb': [
         'static/xml/file.xml'
     ]
 }

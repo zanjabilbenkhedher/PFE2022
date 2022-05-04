@@ -1,13 +1,16 @@
 <odoo>
     <data>
-        <!-- explicit list view definition -->
-        <record model="ir.ui.view" id="facture_list_view">
+
+        <!-- explicit kanban view definition -->
+        <record model="ir.ui.view" id="facture_kanban_view">
             <field name="name">Invoice list</field>
             <field name="model">facture.fact</field>
             <field name="arch" type="xml">
-                <tree>
+
+                <kanban sample="1">
                     <field name="name_seq"/>
                     <field name="name_facture"/>
+                    <field name="last_date"/>
                     <field name="fournisseur"/>
                     <field name="vat"/>
                     <field name="adresse"/>
@@ -18,8 +21,57 @@
                     <field name="currency"/>
                     <field name="montantT"/>
                     <field name="lines"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                <div class="oe_kanban_details">
+                                    <ul>
+                                        <li>
+                                            Code:
+                                            <field name="name_seq"/>
+                                        </li>
+                                        <li>
+                                            Fournisseur:
+                                            <field name="fournisseur"/>
+                                        </li>
+                                        <li>
+                                            Total :
+                                            <field name="montantT"/>
+                                        </li>
+                                    </ul>
 
+                                </div>
+
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+
+            </field>
+        </record>
+
+        <!-- explicit list view definition -->
+        <record model="ir.ui.view" id="facture_list_view">
+            <field name="name">Invoice list</field>
+            <field name="model">facture.fact</field>
+            <field name="arch" type="xml">
+
+                <tree sample="1">
+                    <field name="name_seq"/>
+                    <field name="name_facture"/>
+                    <field name="last_date"/>
+                    <field name="fournisseur"/>
+                    <field name="vat"/>
+                    <field name="adresse"/>
+                    <field name="billDate"/>
+                    <field name="dueDate"/>
+                    <field name="reference"/>
+                    <field name="iban"/>
+                    <field name="currency"/>
+                    <field name="montantT"/>
+                    <field name="lines"/>
                 </tree>
+
             </field>
         </record>
         <!-- explicit form view definition -->
@@ -36,6 +88,13 @@
 
                             </div>
                         </button>
+                        <button name="action_open_facture" type="object" class="oe_stat_button" icon="fa-calendar">
+                            <div class="o_stat_info">
+                                <!--                                <field name="print_facture" class="o_stat_value"/>-->
+                                <span class="o_stat_text">Child</span>
+
+                            </div>
+                        </button>
 
                     </div>
                     <div class="oe_title">
@@ -44,66 +103,64 @@
                         </h1>
                     </div>
 
+                    <group>
+                        <widget name="template_testjs"/>
+                    </group>
+                    <group style="margin-top:10px">
                         <group>
-                            <widget name="template_testjs"/>
-                        </group>
-                        <group style="margin-top:10px" >
-                            <group>
                             <field name="name_seq"/>
                             <field name="name_facture"/>
-                                </group>
-                            <group>
+                        </group>
+                        <group>
                             <field name="fournisseur"/>
                             <field name="vat"/>
-                                </group>
-                            <group>
+                        </group>
+                        <group>
                             <field name="adresse"/>
                             <field name="billDate"/>
-                                </group>
-                            <group>
+                        </group>
+                        <group>
                             <field name="dueDate"/>
                             <field name="reference"/>
-                                </group>
-                            <group>
+                        </group>
+                        <group>
                             <field name="iban"/>
                             <field name="currency"/>
-                                </group>
-                            <group>
+                        </group>
+                        <group>
                             <field name="montantT"/>
                             <field name="lines"/>
-                                </group>
-                            <group>
-                                 <field name="model_id" />
-
-                            <field name="codeZoning" widget="image"/>
-
-                                </group>
-                            <!-- <field name="details_id"/>-->
                         </group>
 
-                      <field style="display:none"  name="detaille"/>
+                        <!-- <field name="details_id"/>-->
+                    </group>
+                    <field style="display:none" name="model_id"/>
+                    <field style="display:none" name="child_ids"/>
+
+                    <field style="display:none" name="codeZoning" widget="image"/>
+                    <field style="display:none" name="detaille"/>
                     <field style="display: none" name="test"/>
                     <field style="display: none" name="imageCode" type="text"/>
                     <form>
-<!--                        <notebook>-->
-<!--                            <page string="Crop Details" name="crop-details">-->
-<!--                                <field context="{'default_model_id':model_id}" name="detail_ids">-->
-<!--                                    <tree editable="top">-->
-<!--                                        <field name="x"/>-->
-<!--                                        <field name="y"/>-->
-<!--                                        <field name="height"/>-->
-<!--                                        <field name="width"/>-->
-<!--                                        <field name="model_id"/>-->
-<!--                                        <field domain="[('model_id', '=' ,model_id)]" name="field_id"/>-->
-<!--                                    </tree>-->
-<!--                                </field>-->
-<!--                            </page>-->
-<!--                            <page string="Other Info" name="other-info">-->
-<!--                                <group>-->
-<!--                                    <field name="OtherInfo"/>-->
-<!--                                </group>-->
-<!--                            </page>-->
-<!--                        </notebook>-->
+                        <!--                        <notebook>-->
+                        <!--                            <page string="Crop Details" name="crop-details">-->
+                        <!--                                <field context="{'default_model_id':model_id}" name="detail_ids">-->
+                        <!--                                    <tree editable="top">-->
+                        <!--                                        <field name="x"/>-->
+                        <!--                                        <field name="y"/>-->
+                        <!--                                        <field name="height"/>-->
+                        <!--                                        <field name="width"/>-->
+                        <!--                                        <field name="model_id"/>-->
+                        <!--                                        <field domain="[('model_id', '=' ,model_id)]" name="field_id"/>-->
+                        <!--                                    </tree>-->
+                        <!--                                </field>-->
+                        <!--                            </page>-->
+                        <!--                            <page string="Other Info" name="other-info">-->
+                        <!--                                <group>-->
+                        <!--                                    <field name="OtherInfo"/>-->
+                        <!--                                </group>-->
+                        <!--                            </page>-->
+                        <!--                        </notebook>-->
                     </form>
                 </sheet>
                 <form>
@@ -114,25 +171,18 @@
         <record model="ir.actions.act_window" id="fact_action_window">
             <field name="name">Invoice window</field>
             <field name="res_model">facture.fact</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="domain">[('parent_id','=',False)]</field>
+
+        </record>
+        <record model="ir.actions.act_window" id="fact_action_window_child">
+            <field name="name">Invoice window Child</field>
+            <field name="res_model">facture.fact</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="domain">[('parent_id','!=',False)]</field>
+
         </record>
 
-        <!-- Top menu item -->
-        <menuitem web_icon="facture,static/description/XXX-icon.png" name="Facture" id="facture.menu_root" />
-        <!-- menu categories -->
-        <menuitem name="Invoice" id="facture_fact_cat"  parent="facture.menu_root" />
-        <!--  <menuitem name="Menu 2" id="facture.menu_2" parent="facture.menu_root"/>
-      -->
-        <!-- actions -->
-        <menuitem name="List of invoices" id="facture_fact_list" parent="facture_fact_cat"
-                  action="fact_action_window" sequence="10"/>
 
-        <menuitem name="Create Invoice" id="menu_create_invoice" parent="facture_fact_cat"
-                  action="action_create_facture" sequence="20"/>
-
-
-        <!--  <menuitem name="Server to list" id="facture" parent="facture.menu_2"
-                    action="facture.action_server"/>
-      -->
     </data>
 </odoo>
