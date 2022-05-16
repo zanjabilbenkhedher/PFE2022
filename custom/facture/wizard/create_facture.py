@@ -1,6 +1,6 @@
 from odoo import api, fields, models, _
 from io import BytesIO
-import base64
+import base64,datetime
 from PIL import Image,ImageChops,ImageDraw
 import cv2
 from pytesseract import pytesseract
@@ -28,8 +28,6 @@ class CreateFactureWiz(models.TransientModel):
     def _onchange_field(self):
         for i in self:
             i.display_facture_image = i.uploadedFacture
-
-    display_facture_image = fields.Image(compute=displayFacture)
 
 
     @api.onchange('uploadedFacture')
@@ -67,19 +65,34 @@ class CreateFactureWiz(models.TransientModel):
             # assert i1.size == i2.size, "Different sizes."
 
             pairs = zip(i1.getdata(), i2.getdata())
-            if len(i1.getbands()) == 1:
+            # if len(i1.getbands()) == 1:
                 # for gray-scale jpegs
-                dif=0
-                for p1,p2 in pairs:
-                    if not p1 is list and not p1 is tuple:
-                        p1=[p1]
-                    val=zip(p1,p2)
-                    if val :
-                        for c1,c2 in val:
-                            dif+=abs(c1-c2)
+
+            dif = 0
+            for p1, p2 in pairs:
+                if not p1 is list and not p1 is tuple:
+                    p1 = [p1]
+                if not p2 is list and not p2 is tuple:
+                    p2 = [p2]
+
+                val = zip(p1, p2)
+                if val:
+                    for c1, c2 in val:
+                        if c1 is tuple or c1 is list:
+                            c1=sum(c1)
+                        if c2 is tuple or c2 is list:
+                            c2=sum(c2)
+                            print("tuple")
+                        if abs(c1 - c2) is tuple:
+                            print("abs")
+                        try:
+                            dif += abs(c1 - c2)
+                        except:
+                            print("except")
+
                 # dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
-            else:
-                dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
+            # else:
+            #     dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
 
             ncomponents = i1.size[0] * i1.size[1] * 3
             print("Difference (percentage):", (dif / 255.0 * 100) / ncomponents)
@@ -148,28 +161,41 @@ class CreateFactureWiz(models.TransientModel):
         return  model_min,min
 
     def read_model(self):
+        model,compareValue = self.find_model(self.uploadedFacture)
+        data=self.read_by_model(model)
+        if  data:
+            res= self.env[model.model_id.model].create(data)
+        activity= self.env['facture.model.activity'].create({
+                'invoicemodel_id':model.id if model else False,
+                'model_id': model.model_id.id if res else False,
+                'res_id': res.id if res else False,
+                'compare': compareValue if model else False,
+                'showImage':self.uploadedFacture,
+                # 'state':'validate' if res else 'progress'
+        })
+
+        if res:
+            activity.action_validate()
+        else:
+            activity.action_progress()
+
+
+
+    def read_by_model(self,model):
         liste = {
 
         }
-        res = False
-        model,compareValue = self.find_model(self.uploadedFacture)
-
         if model:
             for i in model.detail_ids:
-                liste[i.field_id.name] = i.readText(self.uploadedFacture)
+                if i.field_id:
+                    # if not i.isTable:
+                    liste[i.field_id.name] = i.readText(self.uploadedFacture)
+                    # if i.isTable:
+                    #     liste[i.field_id.name] = i.readTable(self.uploadedFacture)
 
-            res=self.env[model.model_id.model].create(liste)
-        self.env['facture.model.activity'].create({
-                'invoicemodel_id':model.id if model else False,
-                'model_id': model.model_id.id if model else False,
-                'res_id': res.id if model else False,
-                'compare': compareValue if model else False,
-                'showImage':self.uploadedFacture,
-                'state':'validate' if model else 'progress'
+        return liste
 
-        })
 
-        print(liste)
     def zoning2(self):
         # i1 = Image.open(BytesIO(base64.b64encode(self.uploadedFacture)))
         img = cv2.imread("images/facture.png")
@@ -185,58 +211,23 @@ class CreateFactureWiz(models.TransientModel):
         cv2.imshow("window", img)
         cv2.waitKey(0)
 
+    def send_Notification(self, summary, user_id, res_model, res_id, note=False):
+        self.env['mail.activity'].sudo().create({
+            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+            'date_deadline': datetime.datetime.now().date(),
+            'summary': summary,
+            'user_id': user_id,
+            'note': note,
+            'res_model': res_model,
+            'res_model_id': self.env['ir.model'].sudo().search([('model', '=', res_model)], limit=1).id,
+            'res_id': res_id,
+        })
 
-    def action_create_facture(self):
-        print("button is created")
-        i1 = Image.open(BytesIO(base64.b64decode(self.uploadedFacture)))
-
-        i1 = i1.resize((500, 500), Image.ANTIALIAS)
-
-        i2 = Image.open(BytesIO(base64.b64decode(self.uploadedFacture2)))
-
-        i2 = i2.resize((500, 500), Image.ANTIALIAS)
-
-        # assert i1.mode == i2.mode, "Different kinds of images."
-        # assert i1.size == i2.size, "Different sizes."
-        #
-        # pairs = zip(i1.getdata(), i2.getdata())
-        # if len(i1.getbands()) == 1:
-        #     # for gray-scale jpegs
-        #     dif = sum(abs(p1 - p2) for p1, p2 in pairs)
-        # else:
-        #     dif = sum(abs(c1 - c2) for p1, p2 in pairs for c1, c2 in zip(p1, p2))
-        #
-        # ncomponents = i1.size[0] * i1.size[1] * 3
-        # print("Difference (percentage):", (dif / 255.0 * 100) / ncomponents)
-
-
-        # def comparaison2(self):
-        #     i1 = Image.open(BytesIO(base64.b64decode(self.uploadedFacture)))
-        #
-        #     i1 = i1.resize((500, 500), Image.ANTIALIAS)
-        #
-        #     i2 = Image.open(BytesIO(base64.b64decode(self.uploadedFacture2)))
-        #
-        #     i2 = i2.resize((500, 500), Image.ANTIALIAS)
-        #     diff = ImageChops.difference(i1, i2)
-        #     if diff.getbbox():
-        #         diff.show()
+        return True
 
 
 
 
 
-    # @api.onchange('uploadedFacture')
-    # def action_create_facture(self,tab):
-    #     if self.uploadedFacture:
-    #         tab = []
-    #         tab.append([
-    #             0, 0, {
-    #                 'fournisseur': 'uploadedFacture',
-    #             }
-    #         ])
-    #
-    #     self.invoice_id = tab
 
-        # self.uploadedFacture=self.uploadedFacture
-        # self.invoice_id = self.uploadedFacture
+

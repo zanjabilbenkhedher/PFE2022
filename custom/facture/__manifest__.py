@@ -9,7 +9,7 @@
     'description': """""",
     'category': 'Accounting/Accounting',
     'website': 'https://www.odoo.com/page/billing',
-    'depends':[],
+    'depends':['mail',],
     'data': [],
     'demo': [],
     'qweb': [],
@@ -24,20 +24,20 @@
         'views/details_views.xml',
         'views/template.xml',
         'views/settings.xml',
+        'views/profile_user.xml',
         'views/modelActivity.xml',
         'views/users.xml',
         'wizard/create_facture.xml',
         'data/sequence.xml',
+        'data/sequence2.xml',
         'security/rule.xml',
         'views/menuitem.xml',
-
-
-
     ],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
     ],
+
 'qweb': [
         'static/xml/file.xml'
     ]

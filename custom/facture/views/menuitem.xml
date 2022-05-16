@@ -3,7 +3,10 @@
    <!-- Top menu item -->
         <menuitem web_icon="facture,static/description/icon.png" name="Invoice Recognition" id="facture.menu_root" />
         <!-- menu categories -->
-              <menuitem name="Invoice" id="facture_fact_cat"  parent="facture.menu_root" />
+              <menuitem groups="group_facture_owner" name="Create Invoice" id="menu_create_invoice_user" parent="facture.menu_root"
+                  action="action_create_facture" sequence="20"/>
+
+              <menuitem groups="group_facture_modelManager,group_facture_administrator" name="Invoices" id="facture_fact_cat"  parent="facture.menu_root" />
 
         <!-- actions -->
                  <menuitem name="List of invoices" id="facture_fact_list" parent="facture_fact_cat"
@@ -11,26 +14,28 @@
                   <menuitem name="Create Invoice" id="menu_create_invoice" parent="facture_fact_cat"
                   action="action_create_facture" sequence="20"/>
 
-                <menuitem name="List of invoices child" id="facture_fact_list_child" parent="facture_fact_cat"
+                <menuitem  name="List of invoices child" id="facture_fact_list_child" parent="facture_fact_cat"
                   action="fact_action_window_child" sequence="10" />
 
-            <menuitem name="Users" id="facture_fact_list_user" parent="facture.menu_root"
-                  action="base.action_res_users" sequence="10"  />
+
+            <menuitem groups="group_facture_administrator" name="Users" id="facture_fact_list_user" parent="facture.menu_root"
+                  action="users_action_window" sequence="10"  />
 
 
 
         <!-- menu categories -->
 
-            <menuitem name="Details" id="facture_details_cat" parent="facture.menu_root"/>
+            <menuitem groups="group_facture_modelManager,group_facture_administrator" name="Details" id="facture_details_cat" parent="facture.menu_root"/>
 
 
-                 <menuitem name="List of details" id="facture_details_list" parent="facture_details_cat"
+                 <menuitem groups="group_facture_modelManager,group_facture_administrator" name="List of details" id="facture_details_list" parent="facture_details_cat"
                   action="details_action_window"/>
 
 
-                <menuitem name="ModelActivity" id="model_activity_cat" parent="facture.menu_root"  action="model_activity_action_window"/>
+        <menuitem  name="Scanned invoices" id="model_activity_cat" parent="facture.menu_root"  action="model_activity_action_window"/>
+        <menuitem  name="User Profile" id="user_profile_cat" parent="facture.menu_root"  action="profile_user_action_window"/>
 
-  <menuitem id="menu_facture_configuration"
+  <menuitem groups="group_facture_administrator" id="menu_facture_configuration"
                   name="Configuration"
                   parent="facture.menu_root"
                   sequence="100"
@@ -43,11 +48,7 @@
                    sequence="10"
                   action="action_facture_config"
                   />
-
-
-
-
-
-
     </data>
+
+
 </odoo>

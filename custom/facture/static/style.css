@@ -21,6 +21,7 @@
  display: none;
 
  }
+
 ::-webkit-file-upload-button {
   background: #7C7BAD;
   color: #FFFFFF;
@@ -30,9 +31,17 @@
 
 }
 
-#imageodoo{
-margin-left:20px
+titleColor{
+font-size:30px,
+color:#7C7BAD
 }
+
+infoColor{
+font-size:30px,
+color:black
+}
+
+
 
 #cropButton{
 margin-bottom:20px;
@@ -40,11 +49,14 @@ margin-top:10px
 
 }
 
-grid{
-display:grid;
+grid_create_invoice{
+display:grid,
+grid-template-rows: 80px 200px;
 grid-template-columns: 3fr 2fr;
-grid-template-rows:20px}
+}
 
-
-
-
+sheetdesign{
+ margin: @padding-base-horizontal;
+        max-width: none;
+        width: auto;
+}

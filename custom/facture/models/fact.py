@@ -1,33 +1,37 @@
 # -*- coding: utf-8 -*-
+from soupsieve import select
+
 from odoo import api, fields, models, _
 import json
+import datetime
+from odoo.exceptions import ValidationError
 import base64
 from PIL import Image
 from io import BytesIO
 class FactureFact(models.Model):
     _name = 'facture.fact'
-    fournisseur = fields.Char("Supplier")
-    vat = fields.Char("Vat")
-    adresse=fields.Char("Adresse")
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    fournisseur = fields.Text("Supplier")
+    vat = fields.Text("Vat")
+    adresse=fields.Text("Adresse")
     billDate=fields.Date("Bill Date")
     dueDate = fields.Date("Due Date")
     iban=fields.Char("IBAN")
-    currency=fields.Char("Currence")
+    currency=fields.Text("Currence")
     montantT = fields.Float("Total")
-    reference = fields.Char("Reference")
     lines=fields.Char("Lines")
     detaille = fields.Text("detaille image")
     imageCode = fields.Text()
     prescription = fields.Text(string="Prescription")
     OtherInfo = fields.Text(string="info")
     detail_ids = fields.One2many('facture.details', 'facture_id')
-    name_seq = fields.Char(string='Order Reference',
+    name_seq = fields.Char(string='Invoice Num',
                            required=True,
                            copy=False, readonly=True, index=True
                            , default=lambda self: _('New'))
+    reference = fields.Text("Reference")
 
     _rec_name = "name_seq"
-    name_facture = fields.Char("name")
     model_id = fields.Many2one(comodel_name='ir.model')
     child_ids = fields.One2many('facture.fact', 'parent_id')
     parent_id= fields.Many2one('facture.fact')
@@ -35,6 +39,16 @@ class FactureFact(models.Model):
     codeZoning = fields.Image("Invoice Model")
     test = fields.Text("test")
 
+    def displayFacture(self):
+        for i in self:
+            i.display_facture_image = i.imageCode
+
+    display_facture_image = fields.Image(compute=displayFacture)
+
+    @api.onchange('Facture_image')
+    def _onchange_field(self):
+        for i in self:
+            i.display_facture_image = i.imageCode
 
     # @api.onchange('detaille')
     def onchangeDetaille(self):
@@ -49,6 +63,8 @@ class FactureFact(models.Model):
                             'y': data[x]['y'],
                             'height': data[x]['height'],
                             'width': data[x]['width'],
+                            'champ1':data[x]['champ1'],
+                            'champ2': data[x]['champ2'],
                             'model_id': self.model_id.id
                         }
                     ])
@@ -70,9 +86,13 @@ class FactureFact(models.Model):
 
     @api.model
     def create(self, vals):
+        # if not "imageCode" in vals:
+        #     raise ValidationError(_(
+        #         'You can not modify the field "Use Documents?" if there are validated invoices in this journal!'))
         if vals.get('name_seq', _('New')) == _('New'):
             vals['name_seq'] = self.env['ir.sequence'].next_by_code('facture.fact.sequence') or _('New')
         result = super(FactureFact, self).create(vals)
+        # self.send_Notification('test_create', result.create_uid.id, self._name, result.id, note='<i> test odoo</i>')
         return result
 
     @api.model
@@ -96,23 +116,28 @@ class FactureFact(models.Model):
                             'y': data[x]['y'],
                             'height': data[x]['height'],
                             'width': data[x]['width'],
+                            'champ1': data[x]['champ1'],
+                            'champ2': data[x]['champ2'],
                             'isTable':data[x]['isTable'],
                             'field_id':data[x]['field_id'],
+                            'facture_id':modelId.id,
+
                             # 'model_id': self.model_id.id
                         }
 
                 if not data[x]['id']:
+                    if data[x]['isTable']:
+                        res= self.create({
+                            'parent_id': modelId.id,
+                            'imageCode': self.env['facture.details']._cropImage(modelId.imageCode,
+                                                                                (float(data[x]['x']), float(data[x]['y']),
+                                                                                 float(data[x]['width']) + float(data[x]['x']),
+                                                                                 float(data[x]['height']) + float(data[x]['y'])))
+                        })
+                        ligne["tableModel_id"]=res.id
                     tab.append([
                         0, 0, ligne
                     ])
-                    if data[x]['isTable']:
-                        self.create({
-                            'parent_id': modelId.id,
-                            'imageCode': self.env['facture.details']._cropImage(modelId.imageCode,
-                                                                                (data[x]['x'], data[x]['y'],
-                                                                                 data[x]['width'] + data[x]['x'],
-                                                                                 data[x]['height'] + data[x]['y']))
-                        })
                 else:
                     self.env['facture.details'].browse(int(data[x]['id'])).write(ligne)
             if len(tab) > 0:
@@ -155,4 +180,31 @@ class FactureFact(models.Model):
 
     @api.model
     def getModelId(self,id):
+        if not id:
+            ICPSudo = self.env['ir.config_parameter'].sudo()
+            defaultModelFact = ICPSudo.get_param('facture.defaultModelFact')
+            return int(defaultModelFact) if defaultModelFact else False
         return self.browse(id).model_id.id
+
+
+    def send_Notification(self,summary,user_id,res_model,res_id,note=False):
+        self.env['mail.activity'].sudo().create({
+            'activity_type_id': self.env.ref('mail.mail_activity_data_todo').id,
+            'date_deadline': datetime.datetime.now().date() ,
+            'summary':summary,
+            'user_id':user_id,
+            'note':note,
+            'res_model':res_model ,
+            'res_model_id':self.env['ir.model'].sudo().search([('model', '=' , res_model)], limit=1).id,
+            'res_id': res_id,
+        })
+
+        return True
+
+    # @api.constrains('imageCode')
+    # def check_imageCode(self):
+    #     for rec in self:
+    #         if not rec.imageCode:
+    #             raise ValidationError(_(
+    #                 'You can not modify the field "Use Documents?" if there are validated invoices in this journal!'))
+

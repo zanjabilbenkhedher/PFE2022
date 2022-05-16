@@ -7,42 +7,30 @@
             <field name="model">facture.fact</field>
             <field name="arch" type="xml">
 
-                <kanban sample="1">
+                <kanban sample="1"  >
                     <field name="name_seq"/>
-                    <field name="name_facture"/>
                     <field name="last_date"/>
-                    <field name="fournisseur"/>
-                    <field name="vat"/>
-                    <field name="adresse"/>
-                    <field name="billDate"/>
-                    <field name="dueDate"/>
-                    <field name="reference"/>
-                    <field name="iban"/>
-                    <field name="currency"/>
-                    <field name="montantT"/>
-                    <field name="lines"/>
                     <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_global_click">
-                                <div class="oe_kanban_details">
-                                    <ul>
-                                        <li>
-                                            Code:
-                                            <field name="name_seq"/>
+                                        <div style="height:350px"  class="o_kanban_img" >
+                                            <field  name="display_facture_image" widget="image"/>
+                                        </div>
+                                        <div style="margin-top:150px" class="oe_kanban_details">
+                                        <ul>
+                                        <li style="display:block ;color:#7C7BAD ; font-size:20px ; margin-bottom:10px" class="fa fa-file" >
+                                             <strong>Invoice Num:
+                                                 <field class="infoColor" name="name_seq"/></strong>
                                         </li>
-                                        <li>
-                                            Fournisseur:
-                                            <field name="fournisseur"/>
+                                        <li style="display:block ;color:black ; font-size:20px ; margin-bottom:10px"  class="fa fa-clock-o">
+                                             Last-create:
+                                        <field class="infoColor" name="last_date" />
                                         </li>
-                                        <li>
-                                            Total :
-                                            <field name="montantT"/>
-                                        </li>
+
                                     </ul>
+                            </div>
 
                                 </div>
-
-                            </div>
                         </t>
                     </templates>
                 </kanban>
@@ -58,18 +46,7 @@
 
                 <tree sample="1">
                     <field name="name_seq"/>
-                    <field name="name_facture"/>
                     <field name="last_date"/>
-                    <field name="fournisseur"/>
-                    <field name="vat"/>
-                    <field name="adresse"/>
-                    <field name="billDate"/>
-                    <field name="dueDate"/>
-                    <field name="reference"/>
-                    <field name="iban"/>
-                    <field name="currency"/>
-                    <field name="montantT"/>
-                    <field name="lines"/>
                 </tree>
 
             </field>
@@ -79,23 +56,15 @@
             <field name="name">Invoice list</field>
             <field name="model">facture.fact</field>
             <field name="arch" type="xml">
-                <sheet>
+                <sheet >
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_open_facture" type="object" class="oe_stat_button" icon="fa-calendar">
+                        <button name="action_open_facture" type="object" class="oe_stat_button" icon="fa-file"  >
                             <div class="o_stat_info">
                                 <!--                                <field name="print_facture" class="o_stat_value"/>-->
                                 <span class="o_stat_text">Invoice</span>
 
                             </div>
                         </button>
-                        <button name="action_open_facture" type="object" class="oe_stat_button" icon="fa-calendar">
-                            <div class="o_stat_info">
-                                <!--                                <field name="print_facture" class="o_stat_value"/>-->
-                                <span class="o_stat_text">Child</span>
-
-                            </div>
-                        </button>
-
                     </div>
                     <div class="oe_title">
                         <h1>
@@ -106,34 +75,32 @@
                     <group>
                         <widget name="template_testjs"/>
                     </group>
-                    <group style="margin-top:10px">
-                        <group>
-                            <field name="name_seq"/>
-                            <field name="name_facture"/>
-                        </group>
-                        <group>
-                            <field name="fournisseur"/>
-                            <field name="vat"/>
-                        </group>
-                        <group>
-                            <field name="adresse"/>
-                            <field name="billDate"/>
-                        </group>
-                        <group>
-                            <field name="dueDate"/>
-                            <field name="reference"/>
-                        </group>
-                        <group>
-                            <field name="iban"/>
-                            <field name="currency"/>
-                        </group>
-                        <group>
-                            <field name="montantT"/>
-                            <field name="lines"/>
-                        </group>
+<!--                    <group style="margin-top:10px">-->
+<!--                        <group>-->
+<!--                            <field name="name_seq"/>-->
+<!--                              <field name="fournisseur"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                              <field name="dueDate"/>-->
+<!--                            <field name="vat"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="adresse"/>-->
+<!--                            <field name="billDate"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="iban"/>-->
+<!--                            <field name="currency"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                              <field name="lines"/>-->
+<!--                        </group>-->
+<!--                        <group>-->
+<!--                            <field name="montantT"/>-->
+<!--                        </group>-->
 
-                        <!-- <field name="details_id"/>-->
-                    </group>
+<!--                        &lt;!&ndash; <field name="details_id"/>&ndash;&gt;-->
+<!--                    </group>-->
                     <field style="display:none" name="model_id"/>
                     <field style="display:none" name="child_ids"/>
 
@@ -141,27 +108,15 @@
                     <field style="display:none" name="detaille"/>
                     <field style="display: none" name="test"/>
                     <field style="display: none" name="imageCode" type="text"/>
-                    <form>
-                        <!--                        <notebook>-->
-                        <!--                            <page string="Crop Details" name="crop-details">-->
-                        <!--                                <field context="{'default_model_id':model_id}" name="detail_ids">-->
-                        <!--                                    <tree editable="top">-->
-                        <!--                                        <field name="x"/>-->
-                        <!--                                        <field name="y"/>-->
-                        <!--                                        <field name="height"/>-->
-                        <!--                                        <field name="width"/>-->
-                        <!--                                        <field name="model_id"/>-->
-                        <!--                                        <field domain="[('model_id', '=' ,model_id)]" name="field_id"/>-->
-                        <!--                                    </tree>-->
-                        <!--                                </field>-->
-                        <!--                            </page>-->
-                        <!--                            <page string="Other Info" name="other-info">-->
-                        <!--                                <group>-->
-                        <!--                                    <field name="OtherInfo"/>-->
-                        <!--                                </group>-->
-                        <!--                            </page>-->
-                        <!--                        </notebook>-->
-                    </form>
+<!--                    <form>-->
+<!--                        <notebook>-->
+<!--                            <page string="Other Info" name="other-info">-->
+<!--                                <group>-->
+<!--                                    <field name="OtherInfo"/>-->
+<!--                                </group>-->
+<!--                            </page>-->
+<!--                        </notebook>-->
+<!--                    </form>-->
                 </sheet>
                 <form>
                 </form>
@@ -178,7 +133,7 @@
         <record model="ir.actions.act_window" id="fact_action_window_child">
             <field name="name">Invoice window Child</field>
             <field name="res_model">facture.fact</field>
-            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_mode">kanban,tree,form</field>
             <field name="domain">[('parent_id','!=',False)]</field>
 
         </record>

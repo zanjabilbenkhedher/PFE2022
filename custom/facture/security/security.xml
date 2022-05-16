@@ -13,7 +13,7 @@
     <record id="group_facture_owner" model="res.groups">
         <field name="name">Owner</field>
          <field name="category_id" ref="module_category_facture"/>
-        <field name="implied_ids" eval="[(4, ref('group_facture_modelManager'))]"/>
+<!--        <field name="implied_ids" eval="[(4, ref('group_facture_modelManager'))]"/>-->
     </record>
 
 

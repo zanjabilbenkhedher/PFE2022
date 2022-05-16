@@ -1,0 +1,38 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="profile_user_list_view">
+            <field name="name">User Profile list</field>
+            <field name="model">user.profile</field>
+            <field name="arch" type="xml">
+                <tree   >
+                    <field name="user"/>
+                    <field name="password"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- explicit form view definition -->
+
+        <record model="ir.ui.view" id="profile_user_form_view">
+            <field name="name">User Profile list</field>
+            <field name="model">user.profile</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <field name="user"/>
+                        <field name="password"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <!-- actions opening views on models -->
+
+        <record model="ir.actions.act_window" id="profile_user_action_window">
+            <field name="name">User Profile window</field>
+            <field name="res_model">user.profile</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+    </data>
+</odoo>

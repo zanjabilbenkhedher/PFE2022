@@ -29,6 +29,8 @@ var test= Widget.extend({
     events: {
         'change .imageodoo':'testimage',
         'change .inv_fildsListeSave':'saveFields',
+        'change .inv_fildsChamp1':'saveChamp1',
+        'change .inv_fildsChamp2':'saveChamp2',
         'click #cropButton':'cropImage',
         'click #cropTableButton':'cropTable',
          'click #btn-edit':'editRow',
@@ -120,7 +122,7 @@ getImage:function() {
     newImg.src = reader.result;
     newImg.id = "myGreatImage";
     self.renderImage(base64String);
-    $('#uploadedImage').css({"border":"4px solid #7C7BAD"});
+    $('#uploadedImage').css({"border":"4px solid white"});
     self.processImage();
 };
     reader.onerror = function (error) {
@@ -162,14 +164,21 @@ return -1
 // selectioner les zones , crop image , detailles dans un tableau
  processImage: function() {
     var self=this;
-    $('#cropButton').css({"display":"block"});
-    $('#cropTableButton').css({"display":"block"});
+    $('#cropButton').css({"display":"inline"});
+    $('#cropTableButton').css({"display":"inline"});
+    $('#uploadedImage').css({"border":"4px solid white"});
     this.cropper = new Cropper(document.getElementById('myGreatImage'), {
     crop(event ) {
        var detaille = event.detail
        detaille['field_id']=null
        detaille["id"]=null
+       detaille["champ1"]=null
+       detaille["champ2"]=null
        detaille["index"]=self.generateHash(detaille).toString()
+       detaille.x= detaille.x.toFixed(2)
+       detaille.y= detaille.y.toFixed(2)
+       detaille.width=detaille.width.toFixed(2)
+       detaille.height= detaille.height.toFixed(2)
         self.monTableau.push(detaille)
         D=event.detail
         X=event.detail.x
@@ -390,6 +399,27 @@ saveFields:function(ev){
      saveElement=this.lastElement
 
 },
+
+saveChamp1:function(ev){
+  var id=$(ev.currentTarget).parent().parent().attr('id')
+    var index=this.getIndex(this.lastElement,"index" , id)
+    this.lastElement[index]['champ1']=$(ev.currentTarget).val()
+//     $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+     saveElement=this.lastElement
+     console.log(saveElement)
+},
+
+saveChamp2:function(ev){
+  var id=$(ev.currentTarget).parent().parent().attr('id')
+    var index=this.getIndex(this.lastElement,"index" , id)
+    this.lastElement[index]['champ2']=$(ev.currentTarget).val()
+//     $('textarea[name=detaille]').val(JSON.stringify(this.lastElement)).change();
+     saveElement=this.lastElement
+     console.log(saveElement)
+
+},
+
+
 });
 
 require('web.widget_registry').add("template_testjs", test);

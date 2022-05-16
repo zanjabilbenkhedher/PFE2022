@@ -1,5 +1,46 @@
 <odoo>
     <data>
+
+               <!-- explicit kanban view definition -->
+         <record model="ir.ui.view" id="details_kanban_view">
+            <field name="name">Details list</field>
+            <field name="model">facture.details</field>
+            <field name="arch" type="xml">
+
+                <kanban sample="1">
+                 <field name="facture_id"/>
+                    <field name="last_date" />
+                    <field name="x"/>
+                    <field name="y"/>
+                    <field name="height"/>
+                    <field name="width"/>
+                      <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_global_click">
+                                        <div style="height:100px"  class="o_kanban_img" >
+                                            <field  name="display_image" widget="image"/>
+                                        </div>
+                                        <div style="margin-top:200px" class="oe_kanban_details">
+                                        <ul>
+                                        <li style="display:block ;color:#7C7BAD ; font-size:20px ; margin-bottom:10px" class="fa fa-file" >
+                                             <strong>Invoice id:
+                                                 <field class="infoColor" name="facture_id"/></strong>
+                                        </li>
+
+                                        <li style="display:block ;color:black ; font-size:20px ; margin-bottom:10px"  class="fa fa-clock-o">
+                                             Last-create:
+                                        <field class="infoColor" name="last_date" />
+                                        </li>
+                                    </ul>
+                            </div>
+
+                                </div>
+                        </t>
+                    </templates>
+                </kanban>
+
+            </field>
+        </record>
         <!-- explicit list view definition -->
 
         <record model="ir.ui.view" id="details_list_view">
@@ -49,6 +90,10 @@
                                 <field name="field_id"/>
 
                             </group>
+                             <group>
+                                <field name="champ1"/>
+                                  <field name="champ2"/>
+                            </group>
                             <group >
                                 <field style="border:4px solid #7C7BAD"  name="display_image" widget="image"/>
                             </group>
@@ -66,7 +111,7 @@
         <record model="ir.actions.act_window" id="details_action_window">
             <field name="name">details window</field>
             <field name="res_model">facture.details</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form</field>
         </record>
 
 
