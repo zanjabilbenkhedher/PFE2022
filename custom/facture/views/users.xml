@@ -3,25 +3,23 @@
     <data>
         <!-- explicit list view definition -->
 
-        <record model="ir.ui.view" id="users_list_view">
-            <field name="name">Users list</field>
-            <field name="model">facture.users</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="user_id"/>
-                </tree>
-            </field>
-        </record>
-
         <!-- explicit form view definition -->
 
         <record model="ir.ui.view" id="users_form_view">
             <field name="name">Users list</field>
             <field name="model">facture.users</field>
             <field name="arch" type="xml">
-                <form>
+                <form discard="false" edit="false">
                     <sheet>
-                       <field name="user_id"/>
+                        <div class="oe_button_box" name="button_box">
+                        <button name="action_open_user" type="object" class="oe_stat_button" icon="fa-list-alt"  >
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Consult</span>
+
+                            </div>
+                        </button>
+                    </div>
+
                     </sheet>
                 </form>
 
@@ -30,9 +28,9 @@
         <!-- actions opening views on models -->
 
         <record model="ir.actions.act_window" id="users_action_window">
-            <field name="name">Users window</field>
+            <field name="name">User Profile window</field>
             <field name="res_model">facture.users</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">form</field>
         </record>
 
     </data>

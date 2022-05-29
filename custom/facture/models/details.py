@@ -1,4 +1,4 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from PIL import Image  # import pillow library (can install with "pip install pillow")
 import pytesseract
 from io import BytesIO
@@ -7,7 +7,7 @@ import base64
 import numpy as gfg
 class FactureDetails(models.Model):
     _name = 'facture.details'
-    facture_id = fields.Many2one(comodel_name='facture.fact')
+    facture_id = fields.Many2one(comodel_name='facture.fact', string="Invoice Num")
     tableModel_id = fields.Many2one(comodel_name='facture.fact')
     model_id = fields.Many2one(comodel_name='ir.model')
     field_id = fields.Many2one(comodel_name='ir.model.fields')
@@ -20,6 +20,12 @@ class FactureDetails(models.Model):
     isTable = fields.Boolean(default=False)
     cropimg = fields.Image("Crop Image ")
     last_date = fields.Date(string='last_create', default=fields.Date.today(), required=True, copy=False)
+
+    name_seq = fields.Char(string='',
+                           required=True,
+                           copy=False, readonly=True, index=True
+                           , default=lambda self: _('New'))
+    _rec_name = "name_seq"
 
     # cropper l'image selon data(x,y,height,width) et extraction de text avec pytesseract
     def cropImage(self, base64Image, data):
@@ -46,7 +52,16 @@ class FactureDetails(models.Model):
     def get_cropped_image(self, base64Image, data):
         im = Image.open(BytesIO(base64.b64decode(base64Image)))
         im = im.crop(data)
-        return im
+        output = io.BytesIO()
+        if im.mode == "RGB":
+            im.save(output, format='JPEG')
+        elif im.mode in ["RGBA", "P"]:
+            im.save(output, format='PNG')
+
+        return base64.b64encode(output.getvalue())
+
+        # return im
+
 
     # faire une boucle pour chaque image cropper
     def newTest(self):
@@ -61,10 +76,12 @@ class FactureDetails(models.Model):
         if not self.isTable:
             text = self.cropImage(img, (self.x, self.y, self.width + self.x, self.height + self.y))
         else:
-            self.env['create.facture.wizard'].create({
+            res=self.env['create.facture.wizard'].create({
                 'uploadedFacture':self.get_cropped_image(img, (self.x, self.y, self.width + self.x, self.height + self.y))
 
-            }).read_by_model(self.tableModel_id)
+            })
+            text=res.read_by_model(self.tableModel_id, mode_table=True)
+            print(text)
 
         return text
 
@@ -129,3 +146,14 @@ class FactureDetails(models.Model):
             return base64.b64encode(output.getvalue())
 
         return False
+
+    @api.model
+    def create(self, vals):
+        # if not "imageCode" in vals:
+        #     raise ValidationError(_(
+        #         'You can not modify the field "Use Documents?" if there are validated invoices in this journal!'))
+        if vals.get('name_seq', _('New')) == _('New'):
+            vals['name_seq'] = self.env['ir.sequence'].next_by_code('facture.details.sequence') or _('New')
+        result = super(FactureDetails, self).create(vals)
+        # self.send_Notification('test_create', result.create_uid.id, self._name, result.id, note='<i> test odoo</i>')
+        return result

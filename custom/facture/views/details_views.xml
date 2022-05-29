@@ -7,7 +7,7 @@
             <field name="model">facture.details</field>
             <field name="arch" type="xml">
 
-                <kanban sample="1">
+                <kanban sample="1"  create="false">
                  <field name="facture_id"/>
                     <field name="last_date" />
                     <field name="x"/>
@@ -23,7 +23,7 @@
                                         <div style="margin-top:200px" class="oe_kanban_details">
                                         <ul>
                                         <li style="display:block ;color:#7C7BAD ; font-size:20px ; margin-bottom:10px" class="fa fa-file" >
-                                             <strong>Invoice id:
+                                             <strong>Invoice Num:
                                                  <field class="infoColor" name="facture_id"/></strong>
                                         </li>
 
@@ -47,7 +47,7 @@
             <field name="name">Details list</field>
             <field name="model">facture.details</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree  create="false">
                     <field name="facture_id"/>
                     <field name="last_date" />
                     <field name="x"/>
@@ -109,7 +109,7 @@
         <!-- actions opening views on models -->
 
         <record model="ir.actions.act_window" id="details_action_window">
-            <field name="name">details window</field>
+            <field name="name">Models window Details</field>
             <field name="res_model">facture.details</field>
             <field name="view_mode">kanban,tree,form</field>
         </record>

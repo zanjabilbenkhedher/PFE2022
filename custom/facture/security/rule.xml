@@ -4,7 +4,7 @@
         <record model="ir.rule" id="facture_fact_rule">
             <field name="name">Record</field>
             <field name="model_id" ref="model_facture_fact"/>
-            <field name="domain_force">[('create_uid','=', user.id)]</field>
+            <field name="domain_force">[('create_uid.id','=', user.id)]</field>
             <field name="perm_read" eval="True"/>
               <field name="groups" eval="[(4, ref('facture.group_facture_modelManager'))]"/>
         </record>
@@ -12,7 +12,7 @@
        <record model="ir.rule" id="facture_fact_details_rule">
             <field name="name">Record</field>
             <field name="model_id" ref="model_facture_details"/>
-            <field name="domain_force">[('create_uid','=', user.id)]</field>
+            <field name="domain_force">[('create_uid.id','=', user.id)]</field>
             <field name="perm_read" eval="True"/>
               <field name="groups" eval="[(4, ref('facture.group_facture_modelManager'))]"/>
         </record>
@@ -20,7 +20,7 @@
      <record model="ir.rule" id="facture_fact_model_activity_rule">
             <field name="name">Record</field>
             <field name="model_id" ref="model_facture_model_activity"/>
-            <field name="domain_force">[('create_uid','=', user.id)]</field>
+            <field name="domain_force">[('create_uid.id','=', user.id)]</field>
             <field name="perm_read" eval="True"/>
               <field name="groups" eval="[(4, ref('facture.group_facture_owner'))]"/>
         </record>
@@ -28,7 +28,7 @@
          <record model="ir.rule" id="facture_fact_model_activity_manager_rule">
             <field name="name">Record Model Manager</field>
             <field name="model_id" ref="model_facture_model_activity"/>
-            <field name="domain_force">[('invoicemodel_id.create_uid','=', user.id)]</field>
+            <field name="domain_force">['|',('invoicemodel_id','=' , False),('invoicemodel_id.create_uid.id','=', user.id)]</field>
             <field name="perm_read" eval="True"/>
               <field name="groups" eval="[(4, ref('facture.group_facture_modelManager'))]"/>
         </record>

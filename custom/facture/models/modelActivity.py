@@ -18,14 +18,12 @@ class ModelActivity(models.Model):
     ]
     state = fields.Selection(stateActivity,default="draft")
     last_date = fields.Date(string='last_create', default=fields.Date.today(), required=True, copy=False)
-    name_seq2 = fields.Char(string='Order Reference',
+    name_seq2 = fields.Text(string='Order Reference',
                             required=True,
                             copy=False, readonly=True, index=True
                             , default=lambda self: _('New'))
 
     _rec_name = "name_seq2"
-
-
 
     @api.model
     def create(self, vals):
@@ -53,7 +51,8 @@ class ModelActivity(models.Model):
         self.state='progress'
         users = self.env.ref('facture.group_facture_modelManager').users
         for user in users:
-            self.send_Notification("progress",user.id,self._name,self.id,"<li>Model in progress</li>")
+            if user.id== self.invoicemodel_id.create_uid.id or not self.invoicemodel_id:
+                self.send_Notification("progress",user.id,self._name,self.id,"<li>Model in progress</li>")
 
 
     def send_Notification(self,summary,user_id,res_model,res_id,note=False):
@@ -70,10 +69,18 @@ class ModelActivity(models.Model):
 
         return True
 
+    def _action_validate(self):
+        self.state='validate'
+
     def action_validate(self):
-        invoice=self.env['create.facture.wizard'].create({
+        invoice=False
+        res=self.env['create.facture.wizard'].create({
             'uploadedFacture':self.showImage,
-        }).read_by_model(self.invoicemodel_id)
+        })
+        data = invoice.read_by_model(self.invoicemodel_id)
+        if data:
+            invoice = self.env[self.invoicemodel_id.model].create(data)
+
 
         if not invoice:
             raise ValidationError("model invalid")
@@ -106,4 +113,14 @@ class ModelActivity(models.Model):
                 'message':'This model will be rejected',
                 'sticky':True,
             }
+        }
+
+    def action_create_model(self):
+        print(self.showImage)
+        return {
+            # 'name': 'User information',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'facture.fact',
+            # 'domain': [('imageCode', '==', self.showImage)]
         }

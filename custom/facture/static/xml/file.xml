@@ -8,21 +8,21 @@
               <button style="font-size:20px; color:blue" class="fa fa-crop btn btn-secondary" id="cropTableButton">Crop Table</button>
             </div>
              <div style="margin-top:20px; margin-left:900px ; margin-right:20px" id="modelData"></div>
-               <div class="container">
-                   <div class="row">
-               <div class="col-sm" style="border:4px solid #7C7BAD ; width: 500px ; margin-top:30px" name="imgFi"
+
+
+               <div  style="border:4px solid #7C7BAD; margin-top:30px ; width:500px ; margin-left:270px" name="imgFi"
                  id="uploadedImage">
                 </div>
 
-               <div class="col-sm" style="margin-top:35px ; margin-left:20px" id="cropTable"> </div>
-                   </div>
-               </div>
+               <div style="margin-top:35px ; margin-left:10px" id="cropTable"> </div>
+
+
             <div style="margin-top:30px;display:none " id="cropResult"></div>
 
         </div>
   </t>
     <t t-name="template_imageRender">
-        <img style="width:500px;height:800px" t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatImage"/>
+        <img style="width:490px"  t-attf-src="data:image/png;base64,{{widget.image}}" id="myGreatImage"/>
     </t>
 
     <t t-name="template_imageCropRender">

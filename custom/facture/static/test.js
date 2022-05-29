@@ -166,7 +166,7 @@ return -1
     var self=this;
     $('#cropButton').css({"display":"inline"});
     $('#cropTableButton').css({"display":"inline"});
-    $('#uploadedImage').css({"border":"4px solid white"});
+    $('#uploadedImage').css({"border":"4px solid white "});
     this.cropper = new Cropper(document.getElementById('myGreatImage'), {
     crop(event ) {
        var detaille = event.detail
@@ -275,6 +275,10 @@ _edit:function(ev){
        detaille["index"]=self.generateHash(detaille).toString()
         self.monTableau.push(detaille)
         D=event.detail
+       event.detail.x= event.detail.x.toFixed(2)
+       event.detail.y= event.detail.y.toFixed(2)
+       event.detail.width=event.detail.width.toFixed(2)
+       event.detail.height= event.detail.height.toFixed(2)
         X=event.detail.x
         Y=event.detail.y
         HEIGHT=event.detail.height
@@ -283,7 +287,8 @@ _edit:function(ev){
         return (self.monTableau,X,Y,HEIGHT,WIDTH , D)
     },
   ready() {
-     $('#cropButton').css({"display":"block"});
+     $('#cropButton').css({"display":"inline"});
+     $('#cropTableButton').css({"display":"inline"});
      self._edit(ev)
   }
   })

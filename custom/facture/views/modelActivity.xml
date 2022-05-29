@@ -1,41 +1,47 @@
 <odoo>
     <data>
         <!-- explicit list view definition -->
-           <record model="ir.ui.view" id="model_activity_kanban_view">
+        <record model="ir.ui.view" id="model_activity_kanban_view">
             <field name="name">Model Activity list</field>
             <field name="model">facture.model.activity</field>
             <field name="arch" type="xml">
-            <kanban sample="1">
-                      <field name="invoicemodel_id"/>
+                <kanban sample="1" create="false">
+                    <field name="invoicemodel_id"/>
                     <field name="model_id"/>
                     <field name="res_id"/>
-                     <field name="name_seq2"/>
-                     <templates>
+                    <field name="name_seq2"/>
+                    <templates>
                         <t t-name="kanban-box">
                             <div t-attf-class="oe_kanban_global_click">
-                                        <div style="height:350px"  class="o_kanban_img" >
-                                            <field  name="showImage" widget="image"/>
-                                        </div>
-                                        <div style="margin-top:200px" class="oe_kanban_details">
-                                        <ul>
-                                            <li style="display:block ;margin-bottom:15px" >
-                                            <field name="state" decoration-success="state == 'validate'" decoration-info="state == 'progress'" decoration-danger="state == 'reject'" decoration-warning="state == 'draft'"  widget="badge" />
+                                <div style="height:350px" class="o_kanban_img">
+                                    <field name="showImage" widget="image"/>
+                                </div>
+                                <div style="margin-top:200px" class="oe_kanban_details">
+                                    <ul>
+                                        <li style="display:block ;margin-bottom:15px">
+                                            <field name="state" decoration-success="state == 'validate'"
+                                                   decoration-info="state == 'progress'"
+                                                   decoration-danger="state == 'reject'"
+                                                   decoration-warning="state == 'draft'" widget="badge"/>
                                         </li>
 
-                                        <li style="display:block ;color:#7C7BAD ; font-size:20px ; margin-bottom:10px" class="fa fa-file" >
-                                             <strong>Invoice Num:
-                                                 <field  name="name_seq2"/></strong>
+                                        <li style="display:block ;color:#7C7BAD ; font-size:20px ; margin-bottom:10px"
+                                            class="fa fa-file">
+                                            <strong>Invoice Num:
+                                                <field name="name_seq2"/>
+                                            </strong>
                                         </li>
 
-                                        <li style="display:block ;color:black ; font-size:20px ; margin-bottom:10px"  class="fa fa-clock-o">
-                                             Last-create:
-                                        <field  name="last_date" />
+                                        <li style="display:block ;color:black ; font-size:20px ; margin-bottom:10px"
+                                            class="fa fa-clock-o">
+                                            Last-create:
+                                            <field name="last_date"/>
                                         </li>
 
                                     </ul>
-                            </div>
-
                                 </div>
+
+                            </div>
                         </t>
                     </templates>
                 </kanban>
@@ -48,13 +54,14 @@
             <field name="name">Model Activity list</field>
             <field name="model">facture.model.activity</field>
             <field name="arch" type="xml">
-                <tree   >
+                <tree>
                     <field name="invoicemodel_id"/>
                     <field name="model_id"/>
                     <field name="res_id"/>
-                     <field name="name_seq2"/>
-                    <field name="state" decoration-success="state == 'validate'" decoration-info="state == 'progress'" decoration-warning="state == 'draft'" decoration-danger="state == 'Reject'"   widget="badge" />
-                    <field  name="last_date" />
+                    <field name="name_seq2"/>
+                    <field name="state" decoration-success="state == 'validate'" decoration-info="state == 'progress'"
+                           decoration-warning="state == 'draft'" decoration-danger="state == 'Reject'" widget="badge"/>
+                    <field name="last_date"/>
                 </tree>
             </field>
         </record>
@@ -67,46 +74,62 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button  attrs="{'invisible':[('state', '!=', 'progress')]}" name="action_draft" id="action_draft" string="Set Draft" class="btn-warning" type="object" />
-                         <button groups="facture.group_facture_modelManager,facture.group_facture_administrator"  attrs="{'invisible':[('state', '!=', 'progress'),('state', '!=', 'reject') ]}"  name="action_validate" id="action_validate" string="Set Validate" class="btn-success" type="object" />
-                         <button groups="facture.group_facture_modelManager,facture.group_facture_administrator"  attrs="{'invisible':[('state', '!=', 'validate') ]}"  name="action_reject" id="action_reject" string="Set Reject" class="btn-danger" type="object" />
-                          <button attrs="{'invisible':[('state', '!=', 'draft')]}"  name="action_progress" id="action_progress" string="Set Progress" class="btn-primary" type="object" />
-                     <field name="state" widget="statusbar" statusbar_visible="draft,progress,validate,reject"/>
+                        <button attrs="{'invisible':[('state', '!=', 'progress')]}" name="action_draft"
+                                id="action_draft" string="Set Draft" class="btn-warning" type="object"/>
+                        <button groups="facture.group_facture_modelManager,facture.group_facture_administrator"
+                                attrs="{'invisible':[('state', '!=', 'progress'),('state', '!=', 'reject') ]}"
+                                name="action_validate" id="action_validate" string="Set Validate" class="btn-success"
+                                type="object"/>
+                        <button groups="facture.group_facture_modelManager,facture.group_facture_administrator"
+                                attrs="{'invisible':[('state', '!=', 'validate') ]}" name="action_reject"
+                                id="action_reject" string="Set Reject" class="btn-danger" type="object"/>
+                        <button attrs="{'invisible':[('state', '!=', 'draft')]}" name="action_progress"
+                                id="action_progress" string="Set Progress" class="btn-primary" type="object"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,progress,validate,reject"/>
                     </header>
                     <sheet>
-                               <div class="oe_button_box" name="button_box">
-                        <button attrs="{'invisible':[('model_id', '=', False)]}" name="action_open_model" type="object" class="oe_stat_button" icon="fa-list-alt"  >
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Consult</span>
+                        <div class="oe_button_box" name="button_box">
+                            <button attrs="{'invisible':[('model_id', '=', False)]}" name="action_open_model"
+                                    type="object" class="oe_stat_button" icon="fa-list-alt">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Consult</span>
 
-                            </div>
-                        </button>
-                    </div>
+                                </div>
+                            </button>
+
+                            <button attrs="{'invisible':[('state', '!=', 'progress')]}" name="action_create_model"
+                                    type="object" class="oe_stat_button" icon="fa-copy">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_text">Create Model</span>
+
+                                </div>
+                            </button>
+                        </div>
 
 
-                       <div class="oe_title">
-                        <h1>
-                            <field name="name_seq2"/>
-                        </h1>
-                    </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name_seq2"/>
+                            </h1>
+                        </div>
 
                         <group style="margin-top:30px">
                             <group>
                                 <field name="showImage" widget="image"/>
                             </group>
                             <group style="margin-top:200px">
-                                 <field name="name_seq2"/>
+                                <field name="name_seq2"/>
                                 <field name="invoicemodel_id"/>
-                                 <field name="compare"/>
+                                <field name="compare"/>
                             </group>
                         </group>
                     </sheet>
-                      <field style="display:none" name="model_id"/>
-                      <field style="display:none" name="res_id"/>
+                    <field style="display:none" name="model_id"/>
+                    <field style="display:none" name="res_id"/>
                     <div class="oe_chatter">
-                    <field name="message_follower_ids"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
                     </div>
                 </form>
 
@@ -115,7 +138,7 @@
         <!-- actions opening views on models -->
 
         <record model="ir.actions.act_window" id="model_activity_action_window">
-            <field name="name">Model Activity window</field>
+            <field name="name">Uploaded invoices window</field>
             <field name="res_model">facture.model.activity</field>
             <field name="view_mode">kanban,tree,form</field>
         </record>

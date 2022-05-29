@@ -12,14 +12,6 @@ class FactureFact(models.Model):
     _name = 'facture.fact'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     fournisseur = fields.Text("Supplier")
-    vat = fields.Text("Vat")
-    adresse=fields.Text("Adresse")
-    billDate=fields.Date("Bill Date")
-    dueDate = fields.Date("Due Date")
-    iban=fields.Char("IBAN")
-    currency=fields.Text("Currence")
-    montantT = fields.Float("Total")
-    lines=fields.Char("Lines")
     detaille = fields.Text("detaille image")
     imageCode = fields.Text()
     prescription = fields.Text(string="Prescription")
@@ -35,9 +27,20 @@ class FactureFact(models.Model):
     model_id = fields.Many2one(comodel_name='ir.model')
     child_ids = fields.One2many('facture.fact', 'parent_id')
     parent_id= fields.Many2one('facture.fact')
+
     last_date = fields.Date(string='last_create', default=fields.Date.today(), required=True, copy=False)
     codeZoning = fields.Image("Invoice Model")
     test = fields.Text("test")
+
+
+    @api.constrains('imageCode')
+    def value_imageCode(self):
+        for rec in self:
+            if rec.imageCode == "" or not rec.imageCode:
+                raise ValidationError("you should upload your invoice")
+
+
+
 
     def displayFacture(self):
         for i in self:
@@ -112,14 +115,14 @@ class FactureFact(models.Model):
             for x in range(0, len(data)):
                 # if not self.checkDetails(data[x]):
                 ligne={
-                            'x': data[x]['x'],
-                            'y': data[x]['y'],
-                            'height': data[x]['height'],
-                            'width': data[x]['width'],
-                            'champ1': data[x]['champ1'],
-                            'champ2': data[x]['champ2'],
-                            'isTable':data[x]['isTable'],
-                            'field_id':data[x]['field_id'],
+                            'x': data[x]['x'] if "x" in data[x] else False,
+                            'y': data[x]['y'] if "y" in data[x] else False,
+                            'height': data[x]['height'] if "height" in data[x] else False,
+                            'width': data[x]['width'] if "width" in data[x] else False,
+                            'champ1': data[x]['champ1'] if "champ1" in data[x] else False,
+                            'champ2': data[x]['champ2']  if "champ2" in data[x] else False,
+                            'isTable':data[x]['isTable']  if "isTable" in data[x] else False,
+                            'field_id':data[x]['field_id']  if "field_id" in data[x] else False,
                             'facture_id':modelId.id,
 
                             # 'model_id': self.model_id.id
@@ -142,13 +145,26 @@ class FactureFact(models.Model):
                     self.env['facture.details'].browse(int(data[x]['id'])).write(ligne)
             if len(tab) > 0:
                 self.browse(int(id)).write({'detail_ids': tab})
-
-
-
         return data
 
+
     def action_open_facture(self):
-        print("Test")
+        return {
+            # 'name': 'User information',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban,list,form',
+            'res_model': 'facture.details',
+            'domain': [('facture_id', '=', self.name_seq)]
+        }
+
+    def action_open_childs(self):
+        return {
+            # 'name': 'User information',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban,list,form',
+            'res_model': 'facture.fact',
+            'domain': [('parent_id', '=', self.name_seq)]
+        }
 
     @api.model
     def getModel(self):

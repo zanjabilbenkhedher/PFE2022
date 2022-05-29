@@ -78,11 +78,11 @@ class CreateFactureWiz(models.TransientModel):
                 val = zip(p1, p2)
                 if val:
                     for c1, c2 in val:
-                        if c1 is tuple or c1 is list:
+                        if type(c1) is tuple or type(c1) is list:
                             c1=sum(c1)
-                        if c2 is tuple or c2 is list:
+                        if type(c2) is tuple or type(c2) is list:
                             c2=sum(c2)
-                            print("tuple")
+
                         if abs(c1 - c2) is tuple:
                             print("abs")
                         try:
@@ -161,6 +161,7 @@ class CreateFactureWiz(models.TransientModel):
         return  model_min,min
 
     def read_model(self):
+        res= False
         model,compareValue = self.find_model(self.uploadedFacture)
         data=self.read_by_model(model)
         if  data:
@@ -175,23 +176,124 @@ class CreateFactureWiz(models.TransientModel):
         })
 
         if res:
-            activity.action_validate()
+            activity._action_validate()
         else:
             activity.action_progress()
 
+    def convert_float(self,val):
+        val_auto=['0','1','2','3','4','5','6','7','8','9','.',',']
+        try:
+            return float(val)
+        except:
+            copy_val = val
+            for i in range(0,len(val)):
+                if val[i] not in val_auto:
+                   copy_val= copy_val.replace(val[i],"")
+            if len(copy_val)>0:
+                return float(copy_val)
+            return 0
+
+    def convert_int(self, val):
+        val_auto = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        try:
+            return int(val)
+        except:
+            copy_val = val
+            for i in range(0, len(val)):
+                if val[i] not in val_auto:
+                    copy_val= copy_val.replace(val[i], "")
+            if len(copy_val) > 0:
+                return int(copy_val)
+            return 0
 
 
-    def read_by_model(self,model):
+
+
+
+    def handle_value(self,i,val , active_key=False):
+        liste={}
+        if i.field_id.ttype in ['char', 'text', 'html', 'selection']:
+            liste[i.field_id.name] = val
+        elif i.field_id.ttype in ['float', 'monetary']:
+            liste[i.field_id.name] = self.convert_float(val)
+        elif i.field_id.ttype in ['integer']:
+            liste[i.field_id.name] = self.convert_int(val)
+        elif i.field_id.ttype in ['date']:
+            dec = {'formatDate': '%Y-%m-%d'}
+
+            if i.champ2:
+                var = eval(i.champ2)
+                dec.update(var)
+            # res = i.readText(self.uploadedFacture)
+            liste[i.field_id.name] = datetime.datetime.strptime(val, dec['formatDate']).date()
+        elif i.field_id.ttype in ['datetime']:
+            dec = {'formatDate': '%Y-%m-%d %H:%M:%S'}
+            if i.champ2:
+                var = eval(i.champ2)
+                dec.update(var)
+
+            # res = i.readText(self.uploadedFacture)
+            liste[i.field_id.name] = datetime.datetime.strptime(val, dec['formatDate'])
+        elif i.field_id.ttype in ['many2one']:
+            # value = i.readText(self.uploadedFacture)
+            dec = {"create": True,
+                   "value": val,
+                   "domain": [('name', '=', val)],
+                   "limit": 1,
+                   "createVal": {'name': val}}
+            if i.champ2:
+                var = eval(i.champ2)
+                dec.update(var)
+            res = self.env[i.field_id.relation].search(dec['domain'], limit=dec['limit'])
+            if not res and dec['create']:
+                res = self.env[i.field_id.relation].create(dec['createVal'])
+            if res:
+                liste[i.field_id.name] = res.id
+        elif i.field_id.ttype in ['many2many', 'one2many'] and i.isTable:
+            # value = i.readText(self.uploadedFacture)
+            print(val)
+            liste[i.field_id.name] = val
+
+        if not active_key:
+            return liste
+        return i.field_id.name,liste[i.field_id.name]
+
+
+    def read_by_model(self,model,mode_table=False):
         liste = {
 
         }
         if model:
             for i in model.detail_ids:
                 if i.field_id:
+                    val=i.readText(self.uploadedFacture)
+                    if type(val) is list and not i.isTable:
+                        var_liste={}
+                        for x in range(0,len(val)):
+                            key,value=self.handle_value(i,val[x],active_key=True)
+                            if not key in var_liste:
+                                var_liste[key]=[]
+                            var_liste[key].append(value)
+                        print(var_liste)
+                        liste.update(var_liste)
+
+
+                    else:
+                        liste.update(self.handle_value(i,val))
+
                     # if not i.isTable:
-                    liste[i.field_id.name] = i.readText(self.uploadedFacture)
+                    # liste[i.field_id.name] = i.readText(self.uploadedFacture)
                     # if i.isTable:
                     #     liste[i.field_id.name] = i.readTable(self.uploadedFacture)
+            if mode_table:
+                response=[]
+                for i in liste:
+                    for j in range(0,len(liste[i])):
+                        if not j in response:
+                            response.append([0,0,{}])
+                        response[j][2][i]=liste[i][j]
+                return response
+
 
         return liste
 
@@ -225,6 +327,28 @@ class CreateFactureWiz(models.TransientModel):
 
         return True
 
+    def multi_line_evaluate(self, expression):
+        res=expression.replace("multi_line(", "")
+        close_mutliLine=False
+        separator=False
+        separ_value=False
+        for i in range(len(res)-1 , 0):
+            if ")" ==res[i] and not close_mutliLine:
+                close_mutliLine=True
+                res[i]=""
+            elif ","==res[i] and not separator:
+                separator=True
+                res[i]=""
+            elif separator==False:
+                separ_value+=res[i]
+                res[i] = ""
+        return res,separator
+
+
+    def evaluate_expressing(self,variable,expression):
+        res=expression.replace(variable, "")
+        res=res.replace("=" , "")
+        return eval(res)
 
 
 
