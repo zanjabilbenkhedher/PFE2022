@@ -40,7 +40,7 @@ class FactureDetails(models.Model):
             if self.champ2 and "result" in self.champ2:
                 result=eval(self.champ2)
             if self.champ1:
-                result=repr(result).split(self.champ1)
+                result=repr(result).replace("\'","").split(self.champ1)
             if self.champ2 and "item" in self.champ2 and type(result) is list:
                 for i in range(0,len(result)):
                     item=result[i]

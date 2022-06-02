@@ -47,6 +47,8 @@ class ModelActivity(models.Model):
         for user in users:
             self.send_Notification("draft", user.id, self._name, self.id, "<li>test</li>")
 
+        print(self.showImage)
+
     def action_progress(self):
         self.state='progress'
         users = self.env.ref('facture.group_facture_modelManager').users

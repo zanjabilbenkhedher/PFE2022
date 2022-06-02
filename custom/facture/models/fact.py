@@ -130,8 +130,11 @@ class FactureFact(models.Model):
 
                 if not data[x]['id']:
                     if data[x]['isTable']:
+                        model= self.env['ir.model.fields'].browse(data[x]['field_id']).relation
+                        model_id=self.env['ir.model'].search([("model",'=',model)]).id
                         res= self.create({
                             'parent_id': modelId.id,
+                            'model_id':model_id,
                             'imageCode': self.env['facture.details']._cropImage(modelId.imageCode,
                                                                                 (float(data[x]['x']), float(data[x]['y']),
                                                                                  float(data[x]['width']) + float(data[x]['x']),
@@ -154,7 +157,7 @@ class FactureFact(models.Model):
             'type': 'ir.actions.act_window',
             'view_mode': 'kanban,list,form',
             'res_model': 'facture.details',
-            'domain': [('facture_id', '=', self.name_seq)]
+            'domain': [('facture_id', '=', self.name_seq) , ('isTable','=', False)]
         }
 
     def action_open_childs(self):

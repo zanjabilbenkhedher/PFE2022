@@ -193,7 +193,6 @@ return -1
 },
 
 initCropper: async function(){
-
   return true
 },
 

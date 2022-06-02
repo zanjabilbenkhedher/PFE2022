@@ -240,10 +240,14 @@ class CreateFactureWiz(models.TransientModel):
                    "value": val,
                    "domain": [('name', '=', val)],
                    "limit": 1,
-                   "createVal": {'name': val}}
+                   "createVal": {'name': val,"property_account_income_id": 10, "property_account_expense_id": 20,}}
+
             if i.champ2:
-                var = eval(i.champ2)
-                dec.update(var)
+                x=i.champ2.split("//")
+                for k in range(0,len(x)):
+                    if not "result" in x[k]:
+                        var = eval(x[k])
+                        dec.update(var)
             res = self.env[i.field_id.relation].search(dec['domain'], limit=dec['limit'])
             if not res and dec['create']:
                 res = self.env[i.field_id.relation].create(dec['createVal'])
@@ -289,13 +293,20 @@ class CreateFactureWiz(models.TransientModel):
                 response=[]
                 for i in liste:
                     for j in range(0,len(liste[i])):
-                        if not j in response:
-                            response.append([0,0,{}])
+                        if not self.checkIndex(response,j):
+                            response.append([0,0,{"account_id": 10,}])
                         response[j][2][i]=liste[i][j]
                 return response
 
 
         return liste
+
+    def checkIndex(self,liste,index):
+        try:
+            x=liste[index]
+        except:
+            return False
+        return True
 
 
     def zoning2(self):
