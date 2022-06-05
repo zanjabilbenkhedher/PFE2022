@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
-from soupsieve import select
-
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 class UserProfile(models.Model):
-    _name = 'user.profile'
-    user = fields.Text("Username")
-    password = fields.Text("Password")
+    _name = 'facture.model.user.profile'
+    user_id = fields.Many2one('res.users','Current User', default=lambda self: self.env.uid)
+    def action_open_user(self):
+        return {
+            'name': 'User information',
+            'type': 'ir.actions.act_window',
+            'view_mode': 'list,form',
+            'res_model': 'res.users',
+            'domain': [('id', '=', int(self.user_id))]
+        }
 
-    # @api.one
-    # def _get_current_login_user(self):
-    #
-    #     user_obj = self.env['res.users'].search([])
-    #
-    #     for user_login in user_obj:
-    #
-    #         current_login = self.env.user
-    #
-    #         if user_login == current_login:
-    #
-    #             self.processing_staff = current_login
-    #
-    #     return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

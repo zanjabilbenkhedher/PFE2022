@@ -165,7 +165,7 @@ class CreateFactureWiz(models.TransientModel):
         model,compareValue = self.find_model(self.uploadedFacture)
         data=self.read_by_model(model)
         if  data:
-            res= self.env[model.model_id.model].create(data)
+            res= self.env[model.model_id.model].create(self.handle_relation_value(model.model_id.model,data))
         activity= self.env['facture.model.activity'].create({
                 'invoicemodel_id':model.id if model else False,
                 'model_id': model.model_id.id if res else False,
@@ -181,7 +181,8 @@ class CreateFactureWiz(models.TransientModel):
             activity.action_progress()
 
     def convert_float(self,val):
-        val_auto=['0','1','2','3','4','5','6','7','8','9','.',',']
+        val_auto=['0','1','2','3','4','5','6','7','8','9','.']
+        val=val.replace(',' ,'.')
         try:
             return float(val)
         except:
@@ -208,6 +209,21 @@ class CreateFactureWiz(models.TransientModel):
 
 
 
+    def handle_relation_value(self,model_id,vals):
+        if model_id=='account.move':
+            vals['move_type']='out_invoice'
+        if model_id=="account.move.line":
+            print(vals)
+            debit=0
+            for x in range(0,len(vals)):
+                vals[x][2]['credit']=vals[x][2]['price_unit']
+                vals[x][2]['exclude_from_invoice_tab'] = False
+                debit+=vals[x][2]['price_unit']
+            vals.append(
+                [0, 0,
+                 {'account_id': 12,'debit':debit , 'exclude_from_invoice_tab':True}]
+            )
+        return vals
 
 
     def handle_value(self,i,val , active_key=False):
@@ -225,7 +241,7 @@ class CreateFactureWiz(models.TransientModel):
                 var = eval(i.champ2)
                 dec.update(var)
             # res = i.readText(self.uploadedFacture)
-            liste[i.field_id.name] = datetime.datetime.strptime(val, dec['formatDate']).date()
+            liste[i.field_id.name] = datetime.datetime.strptime(val.replace('\n',''), dec['formatDate']).date()
         elif i.field_id.ttype in ['datetime']:
             dec = {'formatDate': '%Y-%m-%d %H:%M:%S'}
             if i.champ2:
@@ -240,7 +256,7 @@ class CreateFactureWiz(models.TransientModel):
                    "value": val,
                    "domain": [('name', '=', val)],
                    "limit": 1,
-                   "createVal": {'name': val,"property_account_income_id": 10, "property_account_expense_id": 20,}}
+                   "createVal": {'name': val}}#,"property_account_income_id": 10, "property_account_expense_id": 20,}}
 
             if i.champ2:
                 x=i.champ2.split("//")
@@ -250,13 +266,15 @@ class CreateFactureWiz(models.TransientModel):
                         dec.update(var)
             res = self.env[i.field_id.relation].search(dec['domain'], limit=dec['limit'])
             if not res and dec['create']:
-                res = self.env[i.field_id.relation].create(dec['createVal'])
+                res = self.env[i.field_id.relation].create(self.handle_relation_value(i.field_id.relation,dec['createVal']))
             if res:
                 liste[i.field_id.name] = res.id
         elif i.field_id.ttype in ['many2many', 'one2many'] and i.isTable:
+
             # value = i.readText(self.uploadedFacture)
             print(val)
-            liste[i.field_id.name] = val
+
+            liste[i.field_id.name] = self.handle_relation_value(i.field_id.relation,val)
 
         if not active_key:
             return liste

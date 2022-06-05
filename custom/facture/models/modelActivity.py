@@ -25,6 +25,7 @@ class ModelActivity(models.Model):
 
     _rec_name = "name_seq2"
 
+
     @api.model
     def create(self, vals):
         if vals.get('name_seq2', _('New')) == _('New'):
@@ -118,11 +119,25 @@ class ModelActivity(models.Model):
         }
 
     def action_create_model(self):
-        print(self.showImage)
-        return {
-            # 'name': 'User information',
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'facture.fact',
-            # 'domain': [('imageCode', '==', self.showImage)]
+        model = self.env['facture.fact']
+        ICPSudo = self.env['ir.config_parameter'].sudo()
+        defaultModelFact = ICPSudo.get_param('facture.defaultModelFact')
+
+        var={
+            'imageCode': self.showImage,
+
         }
+        if defaultModelFact:
+            var['model_id']=int(defaultModelFact)
+        res = model.create(var)
+        # print(res.id)
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'kanban,list,form',
+            'res_model': 'facture.fact',
+            'domain': [('id', '=', int(res.id))]
+        }
+
+
+
+

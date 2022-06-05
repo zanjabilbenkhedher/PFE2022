@@ -20,10 +20,16 @@
 
                 <menuitem  name="Uploaded invoices" id="model_activity_cat" parent="facture.menu_root"  action="model_activity_action_window" sequence="30"/>
 
-           <menuitem groups="group_facture_administrator,group_facture_modelManager,group_facture_owner" name="User Profile" id="user_profile_cat" parent="facture.menu_root"  action="users_action_window" sequence="40"/>
+
 
             <menuitem groups="group_facture_administrator" name="Users" id="facture_fact_list_user" parent="facture.menu_root"
                   action="base.action_res_users" sequence="50"  />
+
+
+
+
+         <menuitem groups="group_facture_administrator,group_facture_modelManager,group_facture_owner"  name="User Profile" id="facture_fact_list_user_2" parent="facture.menu_root"
+                  action="users_action_window" sequence="70"  />
 
   <menuitem groups="group_facture_administrator" id="menu_facture_configuration"
                   name="Configuration"

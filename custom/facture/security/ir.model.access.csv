@@ -12,9 +12,7 @@ access.facture.modelActivity_owner,access_facture_modelActivity,facture.model_fa
 access.facture.modelActivity_modelManager,access_facture_modelActivity,facture.model_facture_model_activity,facture.group_facture_modelManager,1,1,1,1
 access.facture.modelActivity_administrator,access_facture_modelActivity,facture.model_facture_model_activity,facture.group_facture_administrator,1,1,1,1
 
-access.facture.userProfile_owner,access_facture_userProfile,facture.model_user_profile,facture.group_facture_owner,1,1,1,1
-access.facture.userProfile_modelManager,access_facture_userProfile,facture.model_user_profile,facture.group_facture_modelManager,1,1,1,1
-access.facture.userProfile_administrator,access_facture_userProfile,facture.model_user_profile,facture.group_facture_administrator,1,1,1,1
+
 
 access.facture.create_facture_owner,access_facture_create_facture,facture.model_create_facture_wizard,facture.group_facture_owner,1,1,1,1
 access.facture.create_facture_modelManager,access_facture_create_facture,facture.model_create_facture_wizard,facture.group_facture_modelManager,1,1,1,1
@@ -24,7 +22,6 @@ access.facture.settings_owner,access_facture_settings,facture.model_res_config_s
 access.facture.settings_modelManager,access_facture_settings,facture.model_res_config_settings,facture.group_facture_modelManager,0,0,0,0
 access.facture.settings_administrator,access_facture_settings,facture.model_res_config_settings,facture.group_facture_administrator,1,1,1,1
 
-access.facture.users_owner,access_facture_users,facture.model_facture_users,facture.group_facture_owner,0,0,0,0
-access.facture.users_modelManager,access_facture_users,facture.model_facture_users,facture.group_facture_modelManager,0,0,0,0
-access.facture.users_administrator,access_facture_users,facture.model_facture_users,facture.group_facture_administrator,1,1,1,1
+
+
 

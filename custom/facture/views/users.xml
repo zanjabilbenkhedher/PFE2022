@@ -5,33 +5,45 @@
 
         <!-- explicit form view definition -->
 
-        <record model="ir.ui.view" id="users_form_view">
-            <field name="name">Users list</field>
-            <field name="model">facture.users</field>
-            <field name="arch" type="xml">
-                <form discard="false" edit="false">
-                    <sheet>
-                        <div class="oe_button_box" name="button_box">
-                        <button name="action_open_user" type="object" class="oe_stat_button" icon="fa-list-alt"  >
-                            <div class="o_stat_info">
-                                <span class="o_stat_text">Consult</span>
+<!--        <record model="ir.ui.view" id="users_form_view">-->
+<!--            <field name="name">Users list</field>-->
+<!--            <field name="model">facture.users</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form >-->
+<!--                    <sheet>-->
+<!--                        <div class="oe_button_box" name="button_box">-->
+<!--                        <button name="action_open_user" type="object" class="oe_stat_button" icon="fa-list-alt"  >-->
+<!--                            <div class="o_stat_info">-->
+<!--                                <span class="o_stat_text">Consult</span>-->
 
-                            </div>
-                        </button>
-                    </div>
+<!--                            </div>-->
+<!--                        </button>-->
+<!--                    </div>-->
 
-                    </sheet>
-                </form>
+<!--                    </sheet>-->
+<!--                </form>-->
 
-            </field>
-        </record>
+<!--            </field>-->
+<!--        </record>-->
         <!-- actions opening views on models -->
 
-        <record model="ir.actions.act_window" id="users_action_window">
-            <field name="name">User Profile window</field>
-            <field name="res_model">facture.users</field>
-            <field name="view_mode">form</field>
-        </record>
+<!--        <record model="ir.actions.act_window" id="users_action_window">-->
+<!--            <field name="name">User Profile window</field>-->
+<!--            <field name="res_model">facture.users</field>-->
+<!--            <field name="view_mode">form</field>-->
+<!--        </record>-->
+
+        <record id="users_action_window" model="ir.actions.server">
+
+          <field name="name">User Profile window</field>
+
+          <field name="model_id" ref="base.model_res_users"/>
+
+          <field name="state">code</field>
+
+          <field name="code">action = model.action_open_user()</field>
+
+ </record>
 
     </data>
 </odoo>

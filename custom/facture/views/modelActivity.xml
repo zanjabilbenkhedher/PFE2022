@@ -5,7 +5,7 @@
             <field name="name">Model Activity list</field>
             <field name="model">facture.model.activity</field>
             <field name="arch" type="xml">
-                <kanban sample="1" create="false">
+                <kanban sample="1" >
                     <field name="invoicemodel_id"/>
                     <field name="model_id"/>
                     <field name="res_id"/>
